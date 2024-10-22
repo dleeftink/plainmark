@@ -86,6 +86,7 @@ test("Filter nodes", () => {
   )
   }
 )
+
 // write HTML file to template
 /*const template = document.createElement('template');
 template.innerHTML = await readFile(filePath);
