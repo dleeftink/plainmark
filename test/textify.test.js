@@ -13,8 +13,7 @@ await openDoc("./data/quipu.html", import.meta.url);
 let range = document.createRange();
 let selection = window.getSelection();
 let fragment = document.createDocumentFragment();
-let textifier = //{ textify:plainDOM }; 
-  new Textifier();
+let textifier = new Textifier(); //{ textify:plainDOM }; 
 
 test("Parse paragraph", () => {
   range.setStart(
@@ -66,6 +65,27 @@ test("Parse list", () => {
 });
 
 
+test("Filter nodes", () => {
+  range.setStart(
+    document.querySelector(".mf-section-2 figure"),
+    0,
+  );
+  range.setEnd(
+    document.querySelector(".mf-section-2 p:nth-of-type(3)"),
+    0
+  );
+
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  fragment = document.getSelection().getRangeAt(0).cloneContents();
+  textifier.opts.drop = ["img","noscript","figure"];
+
+  console.log(
+    textifier.textify(fragment).post.flat().map(d=>d.text).join("")
+  )
+  }
+)
 // write HTML file to template
 /*const template = document.createElement('template');
 template.innerHTML = await readFile(filePath);
