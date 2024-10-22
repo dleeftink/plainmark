@@ -1,13 +1,13 @@
 function plainDOM(fragment, keep = ["href"]) {
-  
   let size;
   let dict = new Map();
 
-  fragment =
-    fragment instanceof DocumentFragment ? fragment : document.getSelection().rangeCount
-      ? document.getSelection().getRangeAt(0).cloneContents()
-      : document.createDocumentFragment();
-
+    fragment = fragment instanceof DocumentFragment
+        ? fragment
+        : document.getSelection().rangeCount
+          ? document.getSelection().getRangeAt(0).cloneContents()
+          : document.createDocumentFragment();
+  
   // traverse the fragment and clean-up attributes
   let walker = document.createTreeWalker(fragment, NodeFilter.SHOW_ALL);
   while ((node = walker.nextNode())) {
@@ -30,8 +30,14 @@ function plainDOM(fragment, keep = ["href"]) {
     .map(([node, prev]) => ({
       text: node.textContent,
       node,
-      group: (prev.tagName ? prev : undefined) ?? (node.tagName ? node : undefined) ?? document.createElement("text"), // not really Text nodes,
-      type: (node.tagName ? node : undefined) ?? (prev.tagName ? prev : undefined) ?? document.createElement("text"), // not really Text nodes,
+      group:
+        (prev.tagName ? prev : undefined) ??
+        (node.tagName ? node : undefined) ??
+        (document.createElement("text")), // not really Text nodes,
+      type:
+        (node.tagName ? node : undefined) ??
+        (prev.tagName ? prev : undefined) ??
+        (document.createElement("text")), // not really Text nodes,
     }))
     .filter((d, i, f) => d.text != f[i - 1]?.text);
 
@@ -65,7 +71,9 @@ function plainDOM(fragment, keep = ["href"]) {
 
         let type = takeOuter ? ctx : takeInner ? its : undefined;
         let subs =
-          txt.length > 1 && its != "TEXT" ? { find: { node: /*d.type*/ d.node, type: its, text: txt } } : undefined;
+          txt.length > 1 && its != "TEXT"
+            ? { find: { node: /*d.type*/ d.node, type: its, text: txt } }
+            : undefined;
         let text = takeOuter ? seq : takeInner ? txt : undefined;
 
         let node = takeOuter ? d.group : takeInner ? d.node : undefined;
@@ -108,8 +116,8 @@ function plainDOM(fragment, keep = ["href"]) {
   function escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
-  let row = 0;
 
+  let row = 0;
   let post = wrap
     .map((inner) =>
       [...inner]
@@ -125,31 +133,28 @@ function plainDOM(fragment, keep = ["href"]) {
             .filter((d) => d.find)
             .map(
               ({ find }, i) => (
-                freq[find.text] ? freq[find.text]++ : (freq[find.text] = 1), { idx: i, nth: freq[find.text], ...find }
+                freq[find.text] ? freq[find.text]++ : (freq[find.text] = 1),
+                { idx: i, nth: freq[find.text], ...find }
               ),
             )
             .sort((a, b) => b.text.length - a.text.length);
 
           for (let i = 0; i < sub.length; i++) {
             let count = 0;
-            let item = sub[i]; // note: item are successive substitutions, not input data rows
+            let row = sub[i]; // note: rows are successive substitutions, not input data rows
 
             // delimit substring matches
             // might not handle complex string patterns, non-ascii or substrings well
-            let rgx = escapeRegex(item.text).replace(/^([\S]?)\b|\b([\S]?)$/gm, "\\b$1$2");
+            let rgx = escapeRegex(row.text).replace(/^([\S]?)\b|\b([\S]?)$/gm, "\\b$1$2");
 
             // replacer is used to accumulate the subsitution rows with proper offsets for each item
-            tgt.replace(
-              new RegExp(rgx, "gm"),
-              (text, from, full) => (
-                item.nth == (count += 1) 
-                  ? (
-                    (item.from = from), 
-                    (item.till = from + text.length) /*- 1*/,
-                    (console.log("Wrapped:", row.nth, count, from, item.text, "in:", text, "with:", item.type)), 
-                    (text)
-                  ) : text
-              ),
+            tgt.replace(new RegExp(rgx, "gm"), (text, from, full) =>
+              row.nth == (count += 1)
+                ? ((row.from = from),
+                  (row.till = from + text.length) /*- 1*/,
+                  console.log("Wrapped:", row.nth, count, from, row.text, "in:", text, "with:", row.type),
+                  text)
+                : text,
             );
           }
 
