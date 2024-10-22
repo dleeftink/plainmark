@@ -3,8 +3,10 @@ import prototype from "./proto.js";
 export default class Textifier {
 
   constructor({ 
+
     keep = ["href"] , // keep attributes
     drop = ["noscript"] // drop tags (TODO)
+  
   } = {}) {
     
     this.opts = { keep, drop };

@@ -15,7 +15,7 @@ let selection = window.getSelection();
 let fragment = document.createDocumentFragment();
 let textifier = new Textifier(); //{ textify:plainDOM }; 
 
-test("Parse paragraph", () => {
+test("Parse text", () => {
   range.setStart(
     document.querySelector("#mf-section-0 p:nth-of-type(2) i"),
     0,
