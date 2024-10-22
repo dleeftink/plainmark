@@ -11,7 +11,7 @@ import * as prettier from 'prettier'
   let source = 'export default ' + assign(Textifier,methods,[],true)
     .replace(/Object.assign\(this\.constructor\.prototype.*?\)/g,'')
     .replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm,'') // remove comments -> better to move after prettyfying
-    .replace(/^(\s.* {\s{0,})$/mg,'$1\n').replace(/^(\s{2}[\}\);]{1,})$/gm,'\n$1') // extra white-space
+    .replace(/^(\s.* {\s{0,})$/mg,'$1\n').replace(/^(\s{2}[\}\);]{1,})$/gm,'\n$1') // extra white-space // https://stackoverflow.com/a/15123777/24561636
   let format =
     await prettier.format(source, { semi: true, printWidth: 60, parser: "babel" });
     await fs.writeFile('./dist/index.js', format.replace(/^(\s{2}\S+ {\s{0,})$/mg,'$1\n').replace(/^(\s{2}[\}\);]{1,})$/gm,'\n$1'), () => { })
