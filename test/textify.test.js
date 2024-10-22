@@ -1,20 +1,14 @@
 // @vitest-environment jsdom
 
-import path from 'node:path';
-import { promises as fs } from 'node:fs';
-
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import { expect, test } from 'vitest'
 import plainDOM from '../code/core/textify.js'
+import readFile from './util/read.js';
+import { expect, test } from 'vitest'
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const filePath = path.join(__dirname, 'data', 'quipu.html');
+const from = import.meta.url;
 
 // write HTML file to document
 document.open();
-document.write(await readFile(filePath));
+document.write(await readFile('./data/quipu.html',from));
 document.close();
 
 // Create a Range object
@@ -41,13 +35,3 @@ const fragment = document.getSelection().getRangeAt(0).cloneContents()//template
 test('test', () => {
   console.log(plainDOM(fragment).post.map(d => d.map(d => d.text).join('')).join(''))
 })
-
-async function readFile(path) {
-  return fs.readFile(path, 'utf8', (err, data) => {
-    if (err) {
-      reject(err);
-    } else {
-      resolve(data);
-    }
-  })
-}
