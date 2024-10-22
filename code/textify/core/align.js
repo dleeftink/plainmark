@@ -1,5 +1,6 @@
 export function align(wrap) {
   
+  // warning: can throw off assign.js in build step
   function escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }

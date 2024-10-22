@@ -25,7 +25,7 @@ export default class Textifier {
 
     let tags = this.realign(wrap);
     let post = this.reslice(tags);
-    
+
     post.flat().forEach((item, i, f) => {
       let prev = f[i - 1];
       let next = f[i + 1];
@@ -34,7 +34,7 @@ export default class Textifier {
     });
 
     return {
-      walk,wrap,post
+      walk, wrap, post
     }
 
   }
@@ -44,7 +44,7 @@ export default class Textifier {
   }
 
   restore() {
-    
+
   }
 
   regroup() {

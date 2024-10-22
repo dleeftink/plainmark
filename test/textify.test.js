@@ -2,6 +2,7 @@
 
 import plainDOM from "../code/core/textify.js";
 import Textifier from "../code/textify/index.js";
+//import Textifier from "../dist/index.js";
 import { openDoc } from "./util/read.js";
 import { expect, test } from "vitest";
 
