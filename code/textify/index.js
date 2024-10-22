@@ -2,14 +2,15 @@ import prototype from "./proto.js";
 
 export default class Textifier {
 
-  constructor({
-    keep = ['href']
+  constructor({ 
+    keep = ["href"] , // keep attributes
+    drop = ["noscript"] // drop tags (TODO)
   } = {}) {
-
+    
+    this.opts = { keep, drop };
     Object.assign(this.constructor.prototype, prototype);
-
+    
     // this.dict = new Map();
-    this.opts = { keep };
 
   }
 

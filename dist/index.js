@@ -1,7 +1,10 @@
 export default class Textifier {
   
-  constructor({ keep = ["href"] } = {}) {
-    this.opts = { keep };
+  constructor({
+    keep = ["href"],
+    drop = ["noscript"],
+  } = {}) {
+    this.opts = { keep, drop };
   }
 
   textify(fragment) {
@@ -57,6 +60,8 @@ export default class Textifier {
         NodeFilter.SHOW_ALL,
       );
 
+    let drop = this.opts.drop.map((d) => d.toUpperCase());
+
     while ((node = walker.nextNode())) {
       if (
         node.parentElement == undefined &&
@@ -67,6 +72,12 @@ export default class Textifier {
 
       if (node.children?.length == 0 || node.length > 0) {
         let tgt = node.parentElement ?? node;
+        if (
+          drop.includes(node.tagName) ||
+          drop.includes(node.parentElement?.tagName)
+        )
+          continue;
+
         dict.set(node, tgt);
 
         let attributes = [...(tgt?.attributes || [])];
@@ -85,6 +96,11 @@ export default class Textifier {
           let nest = -1;
           while (leaf && leaf.parentNode) {
             nest++;
+            if (
+              drop.includes(leaf.tagName) ||
+              drop.includes(leaf.parentNode?.tagName)
+            )
+              dict.delete(node);
             leaf = leaf.parentNode;
           }
           tgt.dataset.depth = nest;
@@ -130,6 +146,8 @@ export default class Textifier {
   }
 
   rematch(fuse) {
+
+    let nogo = ["SPAN", "STYLE"];
 
     return fuse.map((inner) =>
       inner
@@ -182,8 +200,7 @@ export default class Textifier {
 
         .filter(
           (d) =>
-            !["SPAN", "STYLE"].includes(d.type) &&
-            (d.text || d.find),
+            !nogo.includes(d.type) && (d.text || d.find),
         )
 
         .filter(

@@ -1,5 +1,8 @@
 export function match(fuse) {
 
+  // always drop these
+  let nogo = ["SPAN","STYLE"]; 
+
   return fuse.map((inner) =>
     inner
       .map((d, i, f) => {
@@ -26,7 +29,7 @@ export function match(fuse) {
       })
 
       // exclude top-level spans and style elements || keep 'find' and replace candidates
-      .filter((d) => !["SPAN", "STYLE"].includes(d.type) && (d.text || d.find))
+      .filter((d) => !nogo.includes(d.type) && (d.text || d.find))
 
       // exclude surrounding nodes contained in current node
       .filter((d, i, f) => !f[i - 1]?.text?.includes(d?.find?.text) && !f[i + 1]?.text?.includes(d?.find?.text))
