@@ -28,7 +28,7 @@ test("Parse paragraph", () => {
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
   console.log(
-    plainDOM(fragment).post.map((d) => d.map((d) => d.text).join("")),
+    plainDOM(fragment).post.map((d) => d.map((d) => d.text).join("")).join(""),
   );
 });
 
@@ -54,7 +54,7 @@ test("Parse list", () => {
             if(i == 0 && d.col == 0) {
               depth = parseInt(d.node?.dataset?.depth ?? parseInt(d.ctx?.dataset?.depth))
             }
-            return {depth,text:d.text}
+            return {depth,eval:d.text}
            })
           //.join(""),
       ).flat()
