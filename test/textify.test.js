@@ -8,30 +8,41 @@ const from = import.meta.url;
 
 // write HTML file to document
 document.open();
-document.write(await readFile('./data/quipu.html',from));
+document.write(await readFile('./data/quipu.html', from));
 document.close();
 
 // Create a Range object
 let range = document.createRange();
-
-// Set the start position of the range
-range.setStart(document.querySelector('#mf-section-0 p:nth-of-type(2) i'), 0);
-
-// Set the end position of the range
-range.setEnd(document.querySelector('#mf-section-0 p:nth-of-type(2) :nth-child(8)'), 0);
-
-// Add the range to the selection
 let selection = window.getSelection();
-selection.removeAllRanges();
-selection.addRange(range);
-
-const fragment = document.getSelection().getRangeAt(0).cloneContents()//template.content;
+let fragment = document.createDocumentFragment()
 
 // write HTML file to template
 /*const template = document.createElement('template');
-  template.innerHTML = await readFile(filePath);
-  const fragment = template.content;*/
+template.innerHTML = await readFile(filePath);
+const fragment = template.content;*/
 
-test('test', () => {
-  console.log(plainDOM(fragment).post.map(d => d.map(d => d.text).join('')).join(''))
+test('Parse paragraph', () => {
+
+  range.setStart(document.querySelector('#mf-section-0 p:nth-of-type(2) i'), 0);
+  range.setEnd(document.querySelector('#mf-section-0 p:nth-of-type(2) :nth-child(8)'), 0);
+
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  fragment = document.getSelection().getRangeAt(0).cloneContents();
+
+  console.log(plainDOM(fragment).post.map(d => d.map(d => d.text).join('')))
+})
+
+test('Parse list', () => {
+
+  range.setStart(document.querySelector('.mf-section-2 .mw-heading.mw-heading3'), 0);
+  range.setEnd(document.querySelector('.mf-section-2 ul'), 0);
+
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  fragment = document.getSelection().getRangeAt(0).cloneContents();
+
+  console.log(plainDOM(fragment).post.map(d => d.map(d => d.text).join('')))
 })
