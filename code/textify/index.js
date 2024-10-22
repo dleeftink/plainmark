@@ -17,11 +17,11 @@ export default class Textifier {
 
   }
 
-  getFragment() {
+  recheck() {
 
   }
 
-  getNodes() {
+  restore() {
     
   }
 
