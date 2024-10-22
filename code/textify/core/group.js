@@ -11,6 +11,7 @@ export function group(dict) {
     .filter((d, i, f) => d.text != f[i - 1]?.text);
 
   // merge consecutive nodes in the same parent group
+  let size;
   let fuse = prep.reduce(
     (pool, item) => (
       (size = pool.length) && item.group == pool[size - 1][0].group ? pool[size - 1].push(item) : (pool[size] = [item]), pool

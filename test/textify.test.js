@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import plainDOM from "../code/core/textify.js";
+import Textifier from "../code/textify/index.js";
 import { openDoc } from "./util/read.js";
 import { expect, test } from "vitest";
 
@@ -11,6 +12,8 @@ await openDoc("./data/quipu.html", import.meta.url);
 let range = document.createRange();
 let selection = window.getSelection();
 let fragment = document.createDocumentFragment();
+let textifier = //{ textify:plainDOM }; 
+  new Textifier();
 
 test("Parse paragraph", () => {
   range.setStart(
@@ -28,7 +31,7 @@ test("Parse paragraph", () => {
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
   console.log(
-    plainDOM(fragment).post.map((d) => d.map((d) => d.text).join("")).join(""),
+    textifier.textify(fragment).post.map((d) => d.map((d) => d.text).join("")).join(""),
   );
 });
 
@@ -47,7 +50,7 @@ test("Parse list", () => {
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
   console.log(
-    plainDOM(fragment).post
+    textifier.textify(fragment).post
       .filter((row) => row.every((d) => d.type == "LI"))
          .map((row) => row.map((d, i, f) => {
             let depth = 0;
@@ -60,8 +63,6 @@ test("Parse list", () => {
       ).flat()
   );
 });
-
-
 
 
 // write HTML file to template

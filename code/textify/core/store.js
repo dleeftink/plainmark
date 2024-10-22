@@ -3,13 +3,14 @@
 export function store(fragment) {
 
   let dict = new Map() //this.dict.clear()
-  let keep = this.keep
-
+  let keep = this.opts.keep;
+  
+  let branch;
   let node, walker = document.createTreeWalker(fragment, NodeFilter.SHOW_ALL);
 
   while ((node = walker.nextNode())) {
     if (node.parentElement == undefined && node.nodeType == Node.ELEMENT_NODE) {
-      node.dataset.branch = b++;
+      node.dataset.branch = branch++;
     }
 
     if (node.children?.length == 0 || node.length > 0) {
