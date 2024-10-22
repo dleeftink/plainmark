@@ -1,7 +1,7 @@
 function plaindown(post) {
 
   // expects plainDOM().post output
-  
+
   let init = post; 
 
   // process basic formatting tags
@@ -48,3 +48,5 @@ function plaindown(post) {
 }
 
 // console.log(plaindown(plainDOM().post).flat().map((d) => d.exit).join(""));
+
+export default { plaindown }

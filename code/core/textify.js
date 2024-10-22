@@ -18,7 +18,8 @@ function plainDOM(fragment, keep = ["href"]) {
         : document.createDocumentFragment();
 
   // traverse the fragment and clean-up attributes
-  let walker = document.createTreeWalker(fragment, NodeFilter.SHOW_ALL);
+  let node,walker = document.createTreeWalker(fragment, NodeFilter.SHOW_ALL);
+
   while ((node = walker.nextNode())) {
     if (node.parentElement == undefined && node.nodeType == Node.ELEMENT_NODE) {
       node.dataset.branch = b++;
@@ -248,3 +249,4 @@ function plainDOM(fragment, keep = ["href"]) {
     post,
   };
 }
+export default plainDOM
