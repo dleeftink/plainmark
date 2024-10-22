@@ -1,16 +1,29 @@
+
+// usage
+// let frag = document.createDocumentFragment();
+// document.querySelectorAll('p').forEach(node=>frag.appendChild(node.cloneNode(true)))
+
+// plainDOM().post.map(d=>d.map(d=>d.text).join('')) // -> selection
+// plainDOM(frag).post.map(d=>d.map(d=>d.text).join('')) // -> selector
+
 function plainDOM(fragment, keep = ["href"]) {
-  let size;
+  let size, b;
   let dict = new Map();
 
-    fragment = fragment instanceof DocumentFragment
-        ? fragment
-        : document.getSelection().rangeCount
-          ? document.getSelection().getRangeAt(0).cloneContents()
-          : document.createDocumentFragment();
-  
+  fragment =
+    fragment instanceof DocumentFragment
+      ? fragment
+      : document.getSelection().rangeCount
+        ? document.getSelection().getRangeAt(0).cloneContents()
+        : document.createDocumentFragment();
+
   // traverse the fragment and clean-up attributes
   let walker = document.createTreeWalker(fragment, NodeFilter.SHOW_ALL);
   while ((node = walker.nextNode())) {
+    if (node.parentElement == undefined && node.nodeType == Node.ELEMENT_NODE) {
+      node.dataset.branch = b++;
+    }
+
     if (node.children?.length == 0 || node.length > 0) {
       let tgt = node.parentElement ?? node;
       dict.set(node, tgt);
@@ -22,6 +35,16 @@ function plainDOM(fragment, keep = ["href"]) {
         if (keep.includes(attr.name)) continue;
         tgt.removeAttribute(attr.name);
       }
+
+      if (tgt.nodeType == Node.ELEMENT_NODE && tgt.dataset.depth == undefined) {
+        let leaf = tgt;
+        let nest = -1;
+        while (leaf && leaf.parentNode) {
+          nest++;
+          leaf = leaf.parentNode;
+        }
+        tgt.dataset.depth = nest;
+      }
     }
   }
 
@@ -30,24 +53,15 @@ function plainDOM(fragment, keep = ["href"]) {
     .map(([node, prev]) => ({
       text: node.textContent,
       node,
-      group:
-        (prev.tagName ? prev : undefined) ??
-        (node.tagName ? node : undefined) ??
-        (document.createElement("text")), // not really Text nodes,
-      type:
-        (node.tagName ? node : undefined) ??
-        (prev.tagName ? prev : undefined) ??
-        (document.createElement("text")), // not really Text nodes,
+      group: (prev.tagName ? prev : undefined) ?? (node.tagName ? node : undefined) ?? document.createElement("text"), // not really Text nodes,
+      type: (node.tagName ? node : undefined) ?? (prev.tagName ? prev : undefined) ?? document.createElement("text"), // not really Text nodes,
     }))
     .filter((d, i, f) => d.text != f[i - 1]?.text);
 
   // merge consecutive nodes in the same parent group
   let fuse = prep.reduce(
     (pool, item) => (
-      (size = pool.length) && item.group == pool[size - 1][0].group
-        ? pool[size - 1].push(item)
-        : (pool[size] = [item]),
-      pool
+      (size = pool.length) && item.group == pool[size - 1][0].group ? pool[size - 1].push(item) : (pool[size] = [item]), pool
     ),
     [],
   );
@@ -70,10 +84,7 @@ function plainDOM(fragment, keep = ["href"]) {
         let takeInner = ctx != its;
 
         let type = takeOuter ? ctx : takeInner ? its : undefined;
-        let subs =
-          txt.length > 1 && its != "TEXT"
-            ? { find: { node: /*d.type*/ d.node, type: its, text: txt } }
-            : undefined;
+        let subs = txt.length > 1 && its != "TEXT" ? { find: { node: /*d.type*/ d.node, type: its, text: txt } } : undefined;
         let text = takeOuter ? seq : takeInner ? txt : undefined;
 
         let node = takeOuter ? d.group : takeInner ? d.node : undefined;
@@ -121,10 +132,7 @@ function plainDOM(fragment, keep = ["href"]) {
   let post = wrap
     .map((inner) =>
       [...inner]
-        .filter(
-          ([key, val]) =>
-            key.line && key.type && val && val.some((d) => d.text && d.text.replace(/[\s\n]+/g, "").length > 0),
-        )
+        .filter(([key, val]) => key.line && key.type && val && val.some((d) => d.text && d.text.replace(/[\s\n]+/g, "").length > 0))
         .map(([key, val]) => {
           let freq = {};
           let tgt = key.line;
@@ -132,10 +140,7 @@ function plainDOM(fragment, keep = ["href"]) {
           let sub = val
             .filter((d) => d.find)
             .map(
-              ({ find }, i) => (
-                freq[find.text] ? freq[find.text]++ : (freq[find.text] = 1),
-                { idx: i, nth: freq[find.text], ...find }
-              ),
+              ({ find }, i) => (freq[find.text] ? freq[find.text]++ : (freq[find.text] = 1), { idx: i, nth: freq[find.text], ...find }),
             )
             .sort((a, b) => b.text.length - a.text.length);
 

@@ -1,8 +1,7 @@
 function plaindown(post) {
 
   // expects plainDOM().post output
-
-
+  
   let init = post; 
 
   // process basic formatting tags
