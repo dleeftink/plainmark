@@ -1,25 +1,16 @@
 // @vitest-environment jsdom
 
 import plainDOM from "../code/core/textify.js";
-import readFile from "./util/read.js";
+import { openDoc } from "./util/read.js";
 import { expect, test } from "vitest";
 
-const from = import.meta.url;
-
 // write HTML file to document
-document.open();
-document.write(await readFile("./data/quipu.html", from));
-document.close();
+await openDoc("./data/quipu.html", import.meta.url);
 
 // Create a Range object
 let range = document.createRange();
 let selection = window.getSelection();
 let fragment = document.createDocumentFragment();
-
-// write HTML file to template
-/*const template = document.createElement('template');
-template.innerHTML = await readFile(filePath);
-const fragment = template.content;*/
 
 test("Parse paragraph", () => {
   range.setStart(
@@ -56,18 +47,24 @@ test("Parse list", () => {
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
   console.log(
-    plainDOM(fragment)
-      .post.filter((row) => row.some((d) => d.type == "LI"))
-      .map((row) =>
-        row
-          .map(
-            (d, i, f) =>
-              (i == 0
-                ? (d.node?.dataset?.depth ??
-                    parseInt(d.ctx?.dataset?.depth ?? 0) + 1) + "| "
-                : "") + d.text,
-          )
-          .join(""),
-      ),
+    plainDOM(fragment).post
+      .filter((row) => row.every((d) => d.type == "LI"))
+         .map((row) => row.map((d, i, f) => {
+            let depth = 0;
+            if(i == 0 && d.col == 0) {
+              depth = parseInt(d.node?.dataset?.depth ?? parseInt(d.ctx?.dataset?.depth))
+            }
+            return {depth,text:d.text}
+           })
+          //.join(""),
+      ).flat()
   );
 });
+
+
+
+
+// write HTML file to template
+/*const template = document.createElement('template');
+template.innerHTML = await readFile(filePath);
+const fragment = template.content;*/

@@ -4,7 +4,7 @@ import { promises as fs } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export default async function readFile(relativePath,from = import.meta.filename) {
+async function readFile(relativePath,from = import.meta.filename) {
   
   //const filePath = path.join(__dirname,  ...fileString.split('/'));
   
@@ -20,3 +20,13 @@ export default async function readFile(relativePath,from = import.meta.filename)
   })
 }
 
+async function openDoc(relativePath, from) {
+
+  document.open();
+  document.write(await readFile(relativePath, from));
+  document.close();
+}
+
+export {
+  readFile, openDoc
+}
