@@ -2,6 +2,8 @@
 
 import plainDOM from "../code/core/textify.js";
 import Textifier from "../code/textify/index.js";
+import Markifier from "../code/markify/index.js";
+//import Markifier from "../dist/markify.js";
 //import Textifier from "../dist/index.js";
 import { openDoc } from "./util/read.js";
 import { expect, test } from "vitest";
@@ -13,7 +15,9 @@ await openDoc("./data/quipu.html", import.meta.url);
 let range = document.createRange();
 let selection = window.getSelection();
 let fragment = document.createDocumentFragment();
-let textifier = new Textifier(); //{ textify:plainDOM }; 
+
+let textifier = new Textifier(); { textify:plainDOM }; 
+let markifier = new Markifier();
 
 test("Parse text", () => {
   range.setStart(
@@ -30,8 +34,12 @@ test("Parse text", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
+  let textified = textifier.textify(fragment);
+  let markified = markifier.process(textified.post);
+
   console.log(
-    textifier.textify(fragment).post.map((d) => d.map((d) => d.text).join("")).join(""),
+     //textified.post.map((d) => d.map((d) => d.text).join("")).join(""),
+     markified.flat().map((d) => d.exit).join('')
   );
 });
 
@@ -49,8 +57,11 @@ test("Parse list", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
+  let textified = textifier.textify(fragment);
+  let markified = markifier.process(textified.post.filter((row) => row.every((d) => d.ctx.tagName == "UL" || d.ctx.tagName == "OL" || d.type == "LI" || d.type == "OL" || d.type == "UL" )));
+
   console.log(
-    textifier.textify(fragment).post
+    /*textified.post
       .filter((row) => row.every((d) => d.type == "LI"))
          .map((row) => row.map((d, i, f) => {
             let depth = 0;
@@ -60,7 +71,10 @@ test("Parse list", () => {
             return {depth,eval:d.text}
            })
           //.join(""),
-      ).flat()
+      ).flat()*/
+    textified.post.flat().map(d=> d.ctx.tagName + d.node.tagName + d.text)
+
+   // markified.flat().map((d) => d?.exit).join('')
   );
 });
 
