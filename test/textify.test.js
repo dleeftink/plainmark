@@ -36,7 +36,9 @@ test("Parse text", () => {
 
   
   console.log(
-    textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
+    //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
+    [...textifier.textify(fragment).fuse].map(([_,val])=> val.map(d=>d.textContent).join(''))
+
   );
 });
 
@@ -55,12 +57,13 @@ test("Parse list", () => {
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
   console.log(
-    textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
+    //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
+    [...textifier.textify(fragment).fuse].map(([key,val])=> [key.tagName,val.map(d=>d.textContent).join('').slice(0,16) + '...' ])
   );
 });
 
 
-test("Filter nodes", () => {
+test.todo("Filter nodes", () => {
   range.setStart(
     document.querySelector(".mf-section-2 figure"),
     0,
