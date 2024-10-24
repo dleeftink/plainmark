@@ -37,7 +37,7 @@ test("Parse text", () => {
   
   console.log(
     //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-    [...textifier.textify(fragment).fuse].map(([_,val])=> val.map(d=>d.textContent).join(''))
+    [...textifier.textify(fragment).fuse].map(([_,val])=> val.map(d=>d.textContent).join(''))[0]
 
   );
 });
