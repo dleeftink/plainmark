@@ -16,8 +16,8 @@ let range = document.createRange();
 let selection = window.getSelection();
 let fragment = document.createDocumentFragment();
 
-let textifier = new Textifier(); { textify:plainDOM }; 
-let markifier = new Markifier();
+let textifier = new Textifier(); // { textify:plainDOM }; 
+// let markifier = new Markifier();
 
 test("Parse text", () => {
   range.setStart(
@@ -34,12 +34,9 @@ test("Parse text", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
-  let textified = textifier.textify(fragment);
-  let markified = markifier.process(textified.post);
-
+  
   console.log(
-     //textified.post.map((d) => d.map((d) => d.text).join("")).join(""),
-     markified.flat().map((d) => d.exit).join('')
+    textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
   );
 });
 
@@ -57,24 +54,8 @@ test("Parse list", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
-  let textified = textifier.textify(fragment);
-  let markified = markifier.process(textified.post.filter((row) => row.every((d) => d.ctx.tagName == "UL" || d.ctx.tagName == "OL" || d.type == "LI" || d.type == "OL" || d.type == "UL" )));
-
   console.log(
-    /*textified.post
-      .filter((row) => row.every((d) => d.type == "LI"))
-         .map((row) => row.map((d, i, f) => {
-            let depth = 0;
-            if(i == 0 && d.col == 0) {
-              depth = parseInt(d.node?.dataset?.depth ?? parseInt(d.ctx?.dataset?.depth))
-            }
-            return {depth,eval:d.text}
-           })
-          //.join(""),
-      ).flat()*/
-    textified.post.flat().map(d=> d.ctx.tagName + d.node.tagName + d.text)
-
-   // markified.flat().map((d) => d?.exit).join('')
+    textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
   );
 });
 
@@ -93,10 +74,9 @@ test("Filter nodes", () => {
   selection.addRange(range);
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
-  textifier.opts.drop = ["img","noscript","figure"];
 
   console.log(
-    textifier.textify(fragment).post.flat().map(d=>d.text).join("")
+    textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
   )
   }
 )

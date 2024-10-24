@@ -37,44 +37,41 @@ export default class Markifier {
 
   parseLine(pipe) {
 
+    let cnt = 1;
     return pipe.map((row) =>
       row.map(({ exit, ...d }, i, f) => {
         let out = exit;
         switch (true) {
           case i == 0 &&
             f.every((d) => d.ctx.tagName == "OL"):
-            out = this.lead(out, d.node?.dataset?.depth);
+            out = d.ctx.innerHTML;
             break;
 
           case i == 0 &&
             f.every((d) => d.ctx.tagName == "UL"):
-            out = this.lead(
-              out,
-              d.node?.dataset?.depth,
-              null,
-            );
+            out = d.ctx.innerHTML;
             break;
 
-          case d.type.test("h[1-6]"):
+          case /h1-6/.test(d.type):
             out = this.lead(
               out,
-              parseInt(d.type.match(/\d+/)[0]),
+              parseInt(d.type.match(/\d+/)[0] ?? 0),
               "#",
             );
             break;
 
           default:
             out = out;
-            return { ...d, exit: out };
         }
+        return { ...d, exit: out };
       }),
     );
 
   }
 
   link(string, href) {
-    let left = string.match(/^([\[\{\(]+)/);
-    let right = string.match(/([\]\}\)]+$)/);
+    let left = string.match(/^([\[\{\(]+)/)?.[0] ?? "";
+    let right = string.match(/([\]\}\)]+$)/)?.[0] ?? "";
 
     return `${left}[${string.replace(/[\(\)\[\]\{\}]/g, "")}](${href})${right}`;
 

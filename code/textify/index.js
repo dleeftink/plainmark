@@ -4,15 +4,15 @@ export default class Textifier {
 
   constructor({ 
 
-    keep = ["href"] , // keep attributes
-    drop = ["noscript"] // drop tags (TODO)
+    pick = [""] , // get attribute
+    keep = [""] , // keep elements
+    skip = [""] , // skip elements
+    drop = [""] , // kind filterer 
   
   } = {}) {
     
-    this.opts = { keep, drop };
+    this.opts = { pick,skip,keep, drop };
     Object.assign(this.constructor.prototype, prototype);
-    
-    // this.dict = new Map();
 
   }
 
@@ -21,23 +21,10 @@ export default class Textifier {
     fragment = this.recheck(fragment);
 
     let dict = this.restore(fragment);
-    let fuse = this.regroup(dict);
-
-    let walk = this.rematch(fuse);
-    let wrap = this.retrace(walk);
-
-    let tags = this.realign(wrap);
-    let post = this.reslice(tags);
-
-    post.flat().forEach((item, i, f) => {
-      let prev = f[i - 1];
-      let next = f[i + 1];
-      if (prev) Object.assign(item, { prev }, { seq: i });
-      if (next) Object.assign(item, { next }, { seq: i });
-    });
+    let fuse = this.regroup(dict.flat);
 
     return {
-      walk, wrap, post
+      dict, fuse
     }
 
   }
@@ -54,19 +41,11 @@ export default class Textifier {
 
   }
 
-  rematch() {
+  recoder() {
 
   }
 
-  retrace() {
-
-  }
-
-  realign() {
-
-  }
-
-  reslice() {
+  kindsof() {
 
   }
 
