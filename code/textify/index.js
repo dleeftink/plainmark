@@ -4,10 +4,15 @@ export default class Textifier {
 
   constructor({ 
 
-    pick = [""] , // get attribute
-    keep = [""] , // keep elements
-    skip = [""] , // skip elements
-    drop = [""] , // kind filterer 
+    // group filter
+    drop = ["embedded", "metadata", "interactive","sectioning"], 
+
+    // element filter k > s > d
+    keep = ["A","ARTICLE","SECTION"], 
+    skip = ["SUP"],
+
+    // field filter
+    pick = ["href"] , 
   
   } = {}) {
     

@@ -1,32 +1,34 @@
 // traverse a DocumentFragment and clean-up attributes
 
 export function store(fragment) {
-  
+
+  // get required methods
+  let kind = this.kindsof;
+  let code = this.recoder;
+
+  // set content container
   let root = document.body
   let main = document.createElement('main');
   let host = main.attachShadow({ mode: 'open' });
-
-  let kind = this.kindsof;
-  let code = this.recoder;
 
   let frag = fragment ?? getSelection().getRangeAt(0).cloneContents();  
   let body = document.createElement("body");
       body.appendChild(frag);
 
       host.appendChild(body);
-      root.appendChild(main);
-  
-  // not necessary for now
-  // let dict = new Map(); 
+      root.appendChild(main);  
 
+  // v unnecessary for now
+  // let dict = new Map();
+  
   let flat = new Array();
-  let pick = ["href"];
+  let pick = this.opts.pick ?? ["href"];
 
   // node precedence k > s > d
     
-  let keep = ["A","ARTICLE","SECTION"];
-  let skip = ["SUP"];
-  let drop = ["embedded", "metadata", "interactive","sectioning"];
+  let keep = this.opts.keep ?? ["A","ARTICLE","SECTION"];
+  let skip = this.opts.skip ?? ["SUP"];
+  let drop = this.opts.drop ?? ["embedded", "metadata", "interactive","sectioning"];
   
   let prev, text, last;
   let walk = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);

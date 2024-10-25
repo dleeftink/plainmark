@@ -2,11 +2,12 @@
 // import Markifier from "../dist/markify.js";
 // import Textifier from "../dist/textify.js";
 
+import { openDoc } from "./util/read.js";
+import { expect, test } from "vitest";
+
 import { default as Textifier } from "../code/textify/index.js";
 import { default as Markifier } from "../code/markify/index.js";
 
-import { openDoc } from "./util/read.js";
-import { expect, test } from "vitest";
 
 // write HTML file to document
 await openDoc("./data/quipu.html", import.meta.url);
@@ -40,13 +41,13 @@ test("Parse text", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
-  
-  console.log(
-    //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-    [...textifier.textify(fragment).fuse].map(([_,val])=> val.map(d=>d.textContent).join(''))[0]
+    console.log(
+      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
+      [...textifier.textify(fragment).fuse].map(([_,val])=> val.map(d=>d.textContent).join(''))[0]
+    )
 
-  );
-});
+  }
+);
 
 test("Parse list", () => {
   range.setStart(
@@ -62,14 +63,16 @@ test("Parse list", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
-  console.log(
-    //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-    [...textifier.textify(fragment).fuse].map(([key,val])=> [key.tagName,val.map(d=>d.textContent).join('').slice(0,16) + '...' ])
-  );
-});
+    console.log(
+      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
+      [...textifier.textify(fragment).fuse].map(([key,val])=> [key.tagName,val.map(d=>d.textContent).join('').slice(0,16) + '...' ])
+    )
+
+  }
+);
 
 
-test.todo("Filter nodes", () => {
+test("Filter nodes", () => {
   range.setStart(
     document.querySelector(".mf-section-2 figure"),
     0,
@@ -84,8 +87,11 @@ test.todo("Filter nodes", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
-  console.log(
-    textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-  )
+  textifier.opts.skip = ["FIGCAPTION","FIGURE","SUP"]
+
+    console.log(
+      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
+      [...textifier.textify(fragment).fuse].map(([key,val])=> [key?.tagName,val.map(d=>d.textContent).join('').slice(0,16) + '...' ])
+    )
   }
 )
