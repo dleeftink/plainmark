@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import assign from './assign.js'
-import methods from '../code/textify/proto.js'
-import Textifier from '../code/textify/index.js'
-//import * as params from '../code/core/params.js'
+import methods from '../core/textify/proto.js'
+import Textifier from '../core/textify/index.js'
+//import * as params from '../core/params.js'
 import * as prettier from 'prettier'
 
 // build script that inserts imports 

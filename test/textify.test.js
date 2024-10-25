@@ -5,8 +5,8 @@ import Markifier from "../dist/markify.js";
 import { openDoc } from "./util/read.js";
 import { expect, expectTypeOf, test } from "vitest";
 
-import { default as Textifier } from "../code/textify/index.js";
-//import { default as Markifier } from "../code/markify/index.js";
+import { default as Textifier } from "../core/textify/index.js";
+//import { default as Markifier } from "../core/markify/index.js";
 
 
 // write HTML file to document
