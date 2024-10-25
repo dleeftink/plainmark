@@ -10,7 +10,7 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/dist/**', '**/build/**'],
     //assetsInclude: ['**/*.html'],
     environmentOptions: {
-      url: 'http://localhost:3000',
+      // url: 'http://localhost:3000',
     },
     forceRerunTriggers: ['**/*.html']
   },

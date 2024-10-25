@@ -1,23 +1,28 @@
-export function group(dict) {
+export function group(flat) {
+  let fuse = new Map();
+  let last;
 
-  // prepare nodes for parent/child containment checks
-  let prep = Array.from(dict)
-    .map(([node, prev]) => ({
-      text: node.textContent,
-      node,
-      group: (prev.tagName ? prev : undefined) ?? (node.tagName ? node : undefined) ?? document.createElement("text"), // not really Text nodes,
-      type: (node.tagName ? node : undefined) ?? (prev.tagName ? prev : undefined) ?? document.createElement("text"), // not really Text nodes,
-    }))
-    .filter((d, i, f) => d.text != f[i - 1]?.text);
+  let text, path, data;
+  const size = flat.length;
+  for (var i = 0; i < size; i++) {
+    [text, path] = Object.values(flat[i]);
 
-  // merge consecutive nodes in the same parent group
-  let size;
-  let fuse = prep.reduce(
-    (pool, item) => (
-      (size = pool.length) && item.group == pool[size - 1][0].group ? pool[size - 1].push(item) : (pool[size] = [item]), pool
-    ),
-    [],
-  );
+    if (!text.parentElement) {
+      if (!(text.tagName == "BR" && text.textContent.trim() == 0)) continue;
+    }
 
-  return fuse
+    if (path[0].kind[0] == "phrasing") {
+      data = [...(fuse.get(path[1]) ?? [])].concat(text);
+      fuse.set(path[1], data);
+      last = path[1];
+    } else if (text.tagName == "BR") {
+      data = [...(fuse.get(last) ?? [])].concat(text);
+      fuse.set(last, data);
+    } else {
+      data = [...(fuse.get(path[0]) ?? [])].concat(text);
+      fuse.set(path[0], data);
+      last = path[0];
+    }
+  }
+  return fuse;
 }

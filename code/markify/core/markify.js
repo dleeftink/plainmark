@@ -13,9 +13,9 @@ function plaindown(post) {
       .map((d) => {
         let out = d.text;
 
-        if (d.type == "a") out = `[${out.replace(/[\[\]]/g, "")}](${d.node.href})`;
-        if (d.type == "i") out = `*${out}*`;
         if (d.type == "code") out = `\`${out}\``;
+        if (d.type == "a") out = `[${out.replace(/[\[\]]/g, "")}](${d.node.href})`;
+        if (d.type == "i") out = wrap(out,'**');//`*${out}*`;
         return { ...d, exit: out };
       }),
   );
@@ -26,7 +26,7 @@ function plaindown(post) {
       switch (true) {
       
         case i == 0 && f.some((d) => d.ctx.tagName == "OL"):
-          out = `\n${cnt++}. ${out}`;
+          out = `\n${cnt++} ${out}`;
           break;
           
         case i == 0 && f.some((d) => d.ctx.tagName == "UL"):

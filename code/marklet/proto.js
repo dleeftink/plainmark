@@ -2,4 +2,4 @@ const prototype = {
 
 }
 
-export default prototype
+// export default prototype

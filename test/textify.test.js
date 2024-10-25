@@ -1,19 +1,30 @@
 // @vitest-environment jsdom
+// import Markifier from "../dist/markify.js";
+// import Textifier from "../dist/textify.js";
 
-import plainDOM from "../code/core/textify.js";
-import Textifier from "../code/textify/index.js";
-//import Textifier from "../dist/index.js";
 import { openDoc } from "./util/read.js";
 import { expect, test } from "vitest";
 
+import { default as Textifier } from "../code/textify/index.js";
+import { default as Markifier } from "../code/markify/index.js";
+
+
 // write HTML file to document
 await openDoc("./data/quipu.html", import.meta.url);
+
+// alternatively, write HTML file to template
+// const template = document.createElement('template');
+// template.innerHTML = await readFile(filePath);
+// const fragment = template.content;
 
 // Create a Range object
 let range = document.createRange();
 let selection = window.getSelection();
 let fragment = document.createDocumentFragment();
-let textifier = new Textifier(); //{ textify:plainDOM }; 
+
+// Instantiate base class
+let textifier = new Textifier();
+let markifier = new Markifier();
 
 test("Parse text", () => {
   range.setStart(
@@ -30,10 +41,14 @@ test("Parse text", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
-  console.log(
-    textifier.textify(fragment).post.map((d) => d.map((d) => d.text).join("")).join(""),
-  );
-});
+    console.log(
+      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
+      [...textifier.textify(fragment).fuse].map(([_,val])=> val.map(d=>d.textContent).join(''))[0] , '\n' ,
+      [...textifier.textify().fuse].map(([key,val])=> key.tagName + ' <- ' + val.map(d=>d.textContent).join("")).filter(d=>d.split('<-')[1].trim()).join('\n\n').replace(/\n\n\n/g,'\n\n')
+    )
+
+  }
+);
 
 test("Parse list", () => {
   range.setStart(
@@ -49,20 +64,13 @@ test("Parse list", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
-  console.log(
-    textifier.textify(fragment).post
-      .filter((row) => row.every((d) => d.type == "LI"))
-         .map((row) => row.map((d, i, f) => {
-            let depth = 0;
-            if(i == 0 && d.col == 0) {
-              depth = parseInt(d.node?.dataset?.depth ?? parseInt(d.ctx?.dataset?.depth))
-            }
-            return {depth,eval:d.text}
-           })
-          //.join(""),
-      ).flat()
-  );
-});
+    console.log(
+      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
+      [...textifier.textify(fragment).fuse].map(([key,val])=> [key.tagName,val.map(d=>d.textContent).join('').slice(0,16) + '...' ])
+    )
+
+  }
+);
 
 
 test("Filter nodes", () => {
@@ -79,15 +87,12 @@ test("Filter nodes", () => {
   selection.addRange(range);
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
-  textifier.opts.drop = ["img","noscript","figure"];
 
-  console.log(
-    textifier.textify(fragment).post.flat().map(d=>d.text).join("")
-  )
+  textifier.opts.skip = ["FIGCAPTION","FIGURE","SUP"]
+
+    console.log(
+      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
+      [...textifier.textify(fragment).fuse].map(([key,val])=> [key?.tagName,val.map(d=>d.textContent).join('').slice(0,16) + '...' ])
+    )
   }
 )
-
-// write HTML file to template
-/*const template = document.createElement('template');
-template.innerHTML = await readFile(filePath);
-const fragment = template.content;*/
