@@ -7,7 +7,7 @@ export function store(fragment) {
   
   // get required methods
   let perf = performance.now();
-  let kind = (tag) => this.base[tag] ?? [];
+  let kind = (tag) => this.base[tag] ?? new Set('');
 
   // set content container
   let root = document.body
@@ -63,7 +63,7 @@ export function store(fragment) {
     
     // skip some kinds
     if(hop == undefined) {
-      hop = node.skip = its.some((kind) => drop.includes(kind)) || skip.includes(node.tagName)
+      hop = node.skip = drop.some(kind=>its.has(kind)) || skip.includes(node.tagName)
     }
     
     // wipe attributes except selection
@@ -93,7 +93,7 @@ export function store(fragment) {
         continue;
       } else {
         node.kind = kind(node.tagName);
-        node.skip = node.kind.some((kind) => drop.includes(kind)) || skip.includes(node.tagName)
+        node.skip = drop.some(kind=>node.kind.has(kind)) || skip.includes(node.tagName)
         if(node.skip && !keep.includes(node.tagName)) {
           continue
         } else {
@@ -122,13 +122,15 @@ export function store(fragment) {
         if (b > a) { 
 
           // pre-merge strategy
-          list.pop(); list.pop(); 
+          // list.pop(); list.pop(); 
+          list.length -= 2;
           list.push({text,path}); text.textContent = stem.textContent
 
         } else if (a > b) {
 
-          list.pop(); 
+          list.length -= 1;
           // post-merge strategy
+          // list.pop(); 
           // list.push({ text, path });
           // text.textContent = last.parentNode.textContent;
 

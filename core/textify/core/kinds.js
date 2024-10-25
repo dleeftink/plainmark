@@ -2,7 +2,7 @@ export function kinds(recs) {
 
   let perf = performance.now();
 
-  let base = this.base ?? new Object();
+  let base = this?.cache?.dict ?? new Object();
    // base.clear();
       
   let data = recs ?? Object.entries({
@@ -21,23 +21,22 @@ export function kinds(recs) {
     let [kind, list] = data[col];
     let size = list.length
 
-
     for (let row = 0; row < size; row++) {
       let type = list[row].toUpperCase().split(/(\*)/);
       let edge = type[1] ?? [];
       type = type[0];
-      let rows = base[type]
+      let sets = base[type]
       // base.set(type, (base.get(type) || [...edge]).concat(kind))
       // base.set(type, (base.get(type) ?? new Set().add(edge).add(kind)).add(kind));
       // base[type] = base[type] ? [...base[type]||[]].concat(kind) : [...edge].concat(kind)
-      if(rows) { rows.push(kind,...edge) }
-      else { base[type] = [...edge].concat(kind)}
+      if(sets) { sets.add(kind); if(edge.length) sets.add(edge) }
+      else { base[type] = new Set([...edge]).add(kind) }
     }
   }
 
   return { 
     time: performance.now() - perf,
-    dict: this.base = base
+    dict: base
   }
 
 }

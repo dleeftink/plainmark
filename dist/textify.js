@@ -5,9 +5,10 @@ export default class Textifier {
     skip = ["SUP"],
     pick = ["href"],
   } = {}) {
+    
+    this.cache = this.reindex();
     const opts = arguments[0];
     this.opts = { ...opts };
-
     this.base = new Object();
     this.flat = new Array();
     this.fuse = new Map();
@@ -18,7 +19,7 @@ export default class Textifier {
 
     let frag = (fragment = this.recheck(fragment));
 
-    let { dict: base, time: A } = this.reindex();
+    let { dict: base, time: A } = this.cache;
     let { list: flat, time: B } = this.restore(frag);
     let { dict: fuse, time: C } = this.regroup(flat);
 
@@ -52,7 +53,7 @@ export default class Textifier {
 
     let perf = performance.now();
 
-    let base = this.base ?? new Object();
+    let base = this?.cache?.dict ?? new Object();
 
     let data =
       recs ??
@@ -76,19 +77,20 @@ export default class Textifier {
         let type = list[row].toUpperCase().split(/(\*)/);
         let edge = type[1] ?? [];
         type = type[0];
-        let rows = base[type];
+        let sets = base[type];
 
-        if (rows) {
-          rows.push(kind, ...edge);
+        if (sets) {
+          sets.add(kind);
+          if (edge.length) sets.add(edge);
         } else {
-          base[type] = [...edge].concat(kind);
+          base[type] = new Set([...edge]).add(kind);
         }
       }
     }
 
     return {
       time: performance.now() - perf,
-      dict: (this.base = base),
+      dict: base,
     };
 
   }
@@ -96,7 +98,7 @@ export default class Textifier {
   restore(fragment) {
 
     let perf = performance.now();
-    let kind = (tag) => this.base[tag] ?? [];
+    let kind = (tag) => this.base[tag] ?? new Set("");
 
     let root = document.body;
     let main = document.createElement("main");
@@ -151,7 +153,7 @@ export default class Textifier {
 
       if (hop == undefined) {
         hop = node.skip =
-          its.some((kind) => drop.includes(kind)) ||
+          drop.some((kind) => its.has(kind)) ||
           skip.includes(node.tagName);
       }
 
@@ -181,7 +183,7 @@ export default class Textifier {
         } else {
           node.kind = kind(node.tagName);
           node.skip =
-            node.kind.some((kind) => drop.includes(kind)) ||
+            drop.some((kind) => node.kind.has(kind)) ||
             skip.includes(node.tagName);
           if (node.skip && !keep.includes(node.tagName)) {
             continue;
@@ -215,12 +217,11 @@ export default class Textifier {
       ) {
         if (bnode !== undefined && Math.abs(a - b) < 2) {
           if (b > a) {
-            list.pop();
-            list.pop();
+            list.length -= 2;
             list.push({ text, path });
             text.textContent = stem.textContent;
           } else if (a > b) {
-            list.pop();
+            list.length -= 1;
           }
         }
       }
