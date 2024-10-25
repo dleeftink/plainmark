@@ -9,7 +9,7 @@ export function kinds(tagName) {
     heading: ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup"],
     sectioning: ["section","article","nav","aside"],
     metadata: ["base", "link", "meta", "noscript", "script", "style", "template", "title"],
-    navigation: ["nav,""menu","nav"], // custom field;
+    navigation: ["nav","menu","nav"], // custom field;
     interactive: ["a*","img*","input*","label","button","iframe","select","textarea","video*","keygen","object*","embed","audio*","details"],
     flow: ["div","a","span","li*!","img","br","p","script","ul","meta*","link*","i","input","strong","h2","h3","b","h4","label","table","button","svg","section","article","em","form","h1","noscript","header","time","figure","dl","h5","iframe","hr","footer","nav","small","aside","select","h6","abbr","sup","ins","u","ol","blockquote","picture","fieldset","area*","code","textarea","video","cite","dfn","main*","pre","del","address","date","keygen","search","Text*","s","wbr","sub","kbd","object","map","hgroup","var","embed","menu","canvas","template","bdi","q","audio","mark","details","samp","ruby","bdo","data","meter","output","slot","progress","dialog","math","datalist"],
   };
