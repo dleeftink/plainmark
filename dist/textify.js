@@ -1,9 +1,11 @@
 export default class Textifier {
   constructor({
-    pick = [""],
-    keep = [""],
-    skip = [""],
-    drop = [""],
+    drop = ["embedded", "metadata", "interactive", "sectioning"],
+
+    keep = ["A", "ARTICLE", "SECTION"],
+    skip = ["SUP"],
+
+    pick = ["href"],
   } = {}) {
     this.opts = { pick, skip, keep, drop };
 
@@ -38,12 +40,12 @@ export default class Textifier {
 
   restore(fragment) {
 
+    let kind = this.kindsof;
+    let code = this.recoder;
+
     let root = document.body;
     let main = document.createElement("main");
     let host = main.attachShadow({ mode: "open" });
-
-    let kind = this.kindsof;
-    let code = this.recoder;
 
     let frag =
       fragment ??
@@ -55,11 +57,11 @@ export default class Textifier {
     root.appendChild(main);
 
     let flat = new Array();
-    let pick = ["href"];
+    let pick = this.opts.pick ?? ["href"];
 
-    let keep = ["A", "ARTICLE", "SECTION"];
-    let skip = ["SUP"];
-    let drop = ["embedded", "metadata", "interactive", "sectioning"];
+    let keep = this.opts.keep ?? ["A", "ARTICLE", "SECTION"];
+    let skip = this.opts.skip ?? ["SUP"];
+    let drop = this.opts.drop ?? ["embedded", "metadata", "interactive", "sectioning"];
 
     let prev, text, last;
     let walk = document.createTreeWalker(
