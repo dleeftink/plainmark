@@ -2,34 +2,44 @@ import prototype from "./proto.js";
 
 export default class Textifier {
 
+  // drop: group filter | [d] >  s  >  k
+  // skip: nodes filter |  d  > [s] >  k
+  // keep: nodes filter |  d  >  s  > [k]
+  // pick: field filter |  .  >  .  >  .
+
   constructor({ 
 
-    // group filter
     drop = ["embedded", "metadata", "interactive","sectioning"], 
-
-    // element filter k > s > d
     keep = ["A","ARTICLE","SECTION"], 
     skip = ["SUP"],
-
-    // field filter
     pick = ["href"] , 
   
   } = {}) {
     
-    this.opts = { pick,skip,keep, drop };
     Object.assign(this.constructor.prototype, prototype);
-
+    const opts = arguments[0];
+    
+    this.base = new Map();
+    this.fuse = new Map();
+    this.flat = new Array();
+    this.kind = this.kindsof.bind(this) 
+    this.opts = { ...opts };
+    
   }
 
   textify(fragment) {
 
-    fragment = this.recheck(fragment);
+    let frag = fragment = this.recheck(fragment);
 
-    let dict = this.restore(fragment);
-    let fuse = this.regroup(dict.flat);
+    let { dict:base,time:A } = this.reindex();
+    let { list:flat,time:B } = this.restore(frag);
+    let { dict:fuse,time:C } = this.regroup(flat);
 
     return {
-      dict, fuse
+      base,flat,fuse,
+      time:{
+        base:A,flat:B,fuse:C
+      }
     }
 
   }
@@ -38,15 +48,15 @@ export default class Textifier {
 
   }
 
+  reindex() {
+    
+  }
+
   restore() {
 
   }
 
   regroup() {
-
-  }
-
-  recoder() {
 
   }
 

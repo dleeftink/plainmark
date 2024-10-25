@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`I/O 1`] = `
+{
+  "base": Any<Number>,
+  "flat": Any<Number>,
+  "fuse": Any<Number>,
+}
+`;
+
+exports[`Performance 1`] = `
+{
+  "base": Any<Number>,
+  "flat": Any<Number>,
+  "fuse": Any<Number>,
+}
+`;

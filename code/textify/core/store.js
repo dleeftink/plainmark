@@ -2,10 +2,10 @@
 // see: textIterator-like interface
 
 export function store(fragment) {
-
+  
   // get required methods
-  let kind = this.kindsof;
-  let code = this.recoder;
+  let perf = performance.now();
+  let kind = this.kind;
 
   // set content container
   let root = document.body
@@ -22,7 +22,8 @@ export function store(fragment) {
   // v unnecessary for now
   // let dict = new Map();
   
-  let flat = new Array();
+  let list = this.flat ?? new Array();
+      list.length = 0;
   let pick = this.opts.pick ?? ["href"];
 
   // node precedence k > s > d
@@ -36,7 +37,6 @@ export function store(fragment) {
   
   // process fragment textnodes
     
-  let perfA = performance.now();
   while ((text = walk.nextNode())) { 
     let stem = text.parentNode;
 
@@ -53,10 +53,10 @@ export function store(fragment) {
     let tag = stem.tagName;
     let its = node.kind;
     let hop = node.skip;
-    
+
     // tag is a kind of?
     if(its == undefined) {
-      its = node.kind = kind(tag);
+      its = node.kind = kind(tag ?? "TEXT");
     }
     
     // skip some kinds
@@ -109,7 +109,7 @@ export function store(fragment) {
     }
 
     text.path = path;
-    flat.push({ text, path }); // [path] only for dev purposes -> [text] nodes contain path also;
+    list.push({ text, path }); // [path] only for dev purposes -> [text] nodes contain path also;
 
     // general merges pattern
     // todo: content equality
@@ -120,14 +120,14 @@ export function store(fragment) {
         if (b > a) { 
 
           // pre-merge strategy
-          flat.pop(); flat.pop(); 
-          flat.push({text,path}); text.textContent = stem.textContent
+          list.pop(); list.pop(); 
+          list.push({text,path}); text.textContent = stem.textContent
 
         } else if (a > b) {
 
-          flat.pop(); 
+          list.pop(); 
           // post-merge strategy
-          // flat.push({ text, path });
+          // list.push({ text, path });
           // text.textContent = last.parentNode.textContent;
 
         }
@@ -139,11 +139,11 @@ export function store(fragment) {
 
   }
  
-  let perfB = performance.now();
   host.innerHTML = "";
   main.parentNode.removeChild(main);
 
   return {
-    time:perfB-perfA,flat
+    time: performance.now() - perf,
+    list: this.flat = list
   };
 }

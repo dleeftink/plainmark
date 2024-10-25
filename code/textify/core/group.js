@@ -1,6 +1,8 @@
 export function group(flat) {
-  let fuse = new Map();
-  let last;
+   
+  let perf = performance.now();
+  let fuse = this.fuse ?? new Map();
+  let last; fuse.clear();
 
   let text, path, data;
   const size = flat.length;
@@ -24,5 +26,8 @@ export function group(flat) {
       last = path[0];
     }
   }
-  return fuse;
+  return { 
+    time: performance.now() - perf,
+    dict: this.fuse = fuse
+  }
 }
