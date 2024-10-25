@@ -8,7 +8,6 @@ import { expect, expectTypeOf, test } from "vitest";
 import { default as Textifier } from "../core/textify/index.js";
 //import { default as Markifier } from "../core/markify/index.js";
 
-
 // write HTML file to document
 await openDoc("./data/quipu.html", import.meta.url);
 
