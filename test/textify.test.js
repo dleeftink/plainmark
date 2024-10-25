@@ -72,7 +72,7 @@ test("I/O", () => {
   let exit = textifier.textify(fragment);
   
   expect(exit).toMatchObject({ 
-    base: expect.any(Map), 
+    base: expect.any(Object), 
     flat: expect.any(Array),
     fuse: expect.any(Map) 
   })

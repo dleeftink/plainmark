@@ -5,7 +5,7 @@ export function store(fragment) {
   
   // get required methods
   let perf = performance.now();
-  let kind = this.kind;
+  let kind = (tag) => this.base[tag] ?? [];
 
   // set content container
   let root = document.body
@@ -56,7 +56,7 @@ export function store(fragment) {
 
     // tag is a kind of?
     if(its == undefined) {
-      its = node.kind = kind(tag ?? "TEXT");
+      its = node.kind = kind(tag ?? "Text");
     }
     
     // skip some kinds

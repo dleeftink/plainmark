@@ -7,6 +7,7 @@ export default class Textifier {
   // keep: nodes filter |  d  >  s  > [k]
   // pick: field filter |  .  >  .  >  .
 
+
   constructor({ 
 
     drop = ["embedded", "metadata", "interactive","sectioning"], 
@@ -17,13 +18,15 @@ export default class Textifier {
   } = {}) {
     
     Object.assign(this.constructor.prototype, prototype);
-    const opts = arguments[0];
     
-    this.base = new Map();
-    this.fuse = new Map();
-    this.flat = new Array();
-    this.kind = this.kindsof.bind(this) 
-    this.opts = { ...opts };
+    // this.kind = this.kindsof.bind(this) 
+    
+    const opts = arguments[0];
+     this.opts = { ...opts };
+
+     this.base = new Object();
+     this.flat = new Array();
+     this.fuse = new Map();
     
   }
 
@@ -57,10 +60,6 @@ export default class Textifier {
   }
 
   regroup() {
-
-  }
-
-  kindsof() {
 
   }
 
