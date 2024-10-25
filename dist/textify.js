@@ -6,12 +6,11 @@ export default class Textifier {
     pick = ["href"],
   } = {}) {
     const opts = arguments[0];
-
-    this.base = new Map();
-    this.fuse = new Map();
-    this.flat = new Array();
-    this.kind = this.kindsof.bind(this);
     this.opts = { ...opts };
+
+    this.base = new Object();
+    this.flat = new Array();
+    this.fuse = new Map();
 
   }
 
@@ -53,8 +52,7 @@ export default class Textifier {
 
     let perf = performance.now();
 
-    let base = this.base ?? new Map();
-    base.clear();
+    let base = this.base ?? new Object();
 
     let data =
       recs ??
@@ -75,13 +73,16 @@ export default class Textifier {
       let size = list.length;
 
       for (let row = 0; row < size; row++) {
-        let type = list[row].split(/(\*)/);
+        let type = list[row].toUpperCase().split(/(\*)/);
         let edge = type[1] ?? [];
         type = type[0];
-        base.set(
-          type,
-          (base.get(type) || [...edge]).concat(kind),
-        );
+        let rows = base[type];
+
+        if (rows) {
+          rows.push(kind, ...edge);
+        } else {
+          base[type] = [...edge].concat(kind);
+        }
       }
     }
 
@@ -95,7 +96,7 @@ export default class Textifier {
   restore(fragment) {
 
     let perf = performance.now();
-    let kind = this.kind;
+    let kind = (tag) => this.base[tag] ?? [];
 
     let root = document.body;
     let main = document.createElement("main");
@@ -145,7 +146,7 @@ export default class Textifier {
       let hop = node.skip;
 
       if (its == undefined) {
-        its = node.kind = kind(tag ?? "TEXT");
+        its = node.kind = kind(tag ?? "Text");
       }
 
       if (hop == undefined) {
@@ -277,12 +278,6 @@ export default class Textifier {
       time: performance.now() - perf,
       dict: (this.fuse = fuse),
     };
-
-  }
-
-  kindsof(tag) {
-
-    return this.base.get(tag) ?? [];
 
   }
 }
