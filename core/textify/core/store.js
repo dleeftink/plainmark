@@ -1,5 +1,7 @@
 // traverse a DocumentFragment and clean-up attributes
-// see: textIterator-like interface
+
+// how: TextIterator-like interface?
+// how: Node.filter instead of loop?
 
 export function store(fragment) {
   
