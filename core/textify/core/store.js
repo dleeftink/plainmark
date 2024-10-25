@@ -81,10 +81,10 @@ export function store(fragment) {
     }
 
     //dict.set(text, path); 
-    safe = 0;
+    let step = this.opts.step ?? 8; safe = 0
  
     // find path or merge with existing
-    while (node.parentNode && safe < 8) {
+    while (node.parentNode && safe < step) {
       safe++;
 
       // add skip condition to non-visited nodes

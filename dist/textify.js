@@ -4,8 +4,8 @@ export default class Textifier {
     keep = ["A", "ARTICLE", "SECTION"],
     skip = ["SUP"],
     pick = ["href"],
+    step = -1,
   } = {}) {
-    
     this.cache = this.reindex();
     const opts = arguments[0];
     this.opts = { ...opts };
@@ -172,9 +172,10 @@ export default class Textifier {
         delete node.skip;
       }
 
+      let step = this.opts.step ?? 8;
       safe = 0;
 
-      while (node.parentNode && safe < 8) {
+      while (node.parentNode && safe < step) {
         safe++;
 
         if (node.skip) {

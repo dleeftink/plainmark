@@ -5,8 +5,8 @@ export default class Textifier {
   // drop: group filter | [d] >  s  >  k
   // skip: nodes filter |  d  > [s] >  k
   // keep: nodes filter |  d  >  s  > [k]
-  // pick: field filter |  .  >  .  >  .
-
+  // pick: field filter | [p] > [p] > [p]
+  // step: steps upward | txt-->-?->--top
 
   constructor({ 
 
@@ -14,6 +14,7 @@ export default class Textifier {
     keep = ["A","ARTICLE","SECTION"], 
     skip = ["SUP"],
     pick = ["href"] , 
+    step = 8
   
   } = {}) {
     
