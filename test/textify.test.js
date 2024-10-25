@@ -43,7 +43,8 @@ test("Parse text", () => {
 
     console.log(
       //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-      [...textifier.textify(fragment).fuse].map(([_,val])=> val.map(d=>d.textContent).join(''))[0]
+      [...textifier.textify(fragment).fuse].map(([_,val])=> val.map(d=>d.textContent).join(''))[0] , '\n' ,
+      [...textifier.textify().fuse].map(([key,val])=> key.tagName + ' <- ' + val.map(d=>d.textContent).join("")).filter(d=>d.split('<-')[1].trim()).join('\n\n').replace(/\n\n\n/g,'\n\n')
     )
 
   }

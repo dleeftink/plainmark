@@ -1,4 +1,5 @@
 // traverse a DocumentFragment and clean-up attributes
+// see: textIterator-like interface
 
 export function store(fragment) {
 
