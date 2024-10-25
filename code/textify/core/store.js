@@ -26,7 +26,7 @@ export function store(fragment) {
     
   let keep = ["A","ARTICLE","SECTION"];
   let skip = ["SUP"];
-  let drop = ["embedded", "metadata", "interactive","navigation"];
+  let drop = ["embedded", "metadata", "interactive","sectioning"];
   
   let prev, text, last;
   let walk = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
@@ -104,40 +104,36 @@ export function store(fragment) {
       path.push(node);
       node = node.parentNode;
     }
+
     text.path = path;
+    flat.push({ text, path }); // [path] only for dev purposes -> [text] nodes contain path also;
 
-    // logic can be simplified when constraining the search space to similar kinded nodes
-    // cross check path [[0>1],[1>0]] whether successive above/below elements are deep equal
-    // deletes and updates the selected elements if so
-    if (prev && path[0] && prev[1] && path[0].textContent && prev[1].textContent && 
-        path[0].textContent.trim().length > 0 && prev[1].textContent.trim().length > 0 &&
-        path[0].textContent.trim().length < 32 && prev[1].textContent.trim().length < 32 &&
-        path[0] == prev[1] && path[1] !== prev[0] && prev[0] !== undefined && 
-        code(path[0].textContent) == code(prev[1].textContent)
-     ) {
-       if(path[0].kind.includes('phrasing') && prev[1].kind.includes('phrasing') && last.tagName != 'BR') {
-       //console.log(its,"merged:", text.textContent, "with:", path[0].kind , path[0].outerHTML.slice(0,64));
-       //dict.delete(last); text.textContent = stem.textContent;
-        flat.pop(); text.textContent = stem.textContent;
-       }
-    }
-    flat.push({text,path}); // [path] only for dev purposes -> [text] nodes contain path also;
+    // general merges pattern
+    // todo: content equality
 
-    if (prev && path[1] && prev[0] && path[1].textContent && prev[0].textContent &&
-        path[1].textContent.trim().length > 0 && prev[0].textContent.trim().length > 0 &&
-        path[1].textContent.trim().length < 32 && prev[0].textContent.trim().length < 32 &&
-        path[1] == prev[0] && path[0] !== prev[1] && path[1] !== undefined && 
-        code(path[1].textContent) == code(prev[0].textContent)
-     ) {
-       if(path[1].kind.includes('phrasing') && prev[0].kind.includes('phrasing')  && last.tagName != 'BR') {
-       //console.log(its,"merged:", text.textContent, "with:", path[1].kind , path[1].outerHTML.slice(0,64));
-       //dict.delete(text);
-       flat.pop()
-       }
+    let a = 0,anode,bnode,b = 0;
+    if ((anode = path.find((d, i) => ((a = i), d.tagName == "A"))) == (bnode = prev?.find((d, j) => ((b = j), d.tagName == "A")))) {
+      if (bnode !== undefined && Math.abs(a-b) < 2) {
+        if (b > a) { 
+
+          // pre-merge strategy
+          flat.pop(); flat.pop(); 
+          flat.push({text,path}); text.textContent = stem.textContent
+
+        } else if (a > b) {
+
+          flat.pop(); 
+          // post-merge strategy
+          // flat.push({ text, path });
+          // text.textContent = last.parentNode.textContent;
+
+        }
+      }
     }
 
     prev = path;
     last = text;
+
   }
  
   let perfB = performance.now();

@@ -1,23 +1,29 @@
 // @vitest-environment jsdom
+// import Markifier from "../dist/markify.js";
+// import Textifier from "../dist/textify.js";
 
-import plainDOM from "../code/core/textify.js";
-import Textifier from "../code/textify/index.js";
-import Markifier from "../code/markify/index.js";
-//import Markifier from "../dist/markify.js";
-//import Textifier from "../dist/index.js";
+import { default as Textifier } from "../code/textify/index.js";
+import { default as Markifier } from "../code/markify/index.js";
+
 import { openDoc } from "./util/read.js";
 import { expect, test } from "vitest";
 
 // write HTML file to document
 await openDoc("./data/quipu.html", import.meta.url);
 
+// alternatively, write HTML file to template
+// const template = document.createElement('template');
+// template.innerHTML = await readFile(filePath);
+// const fragment = template.content;
+
 // Create a Range object
 let range = document.createRange();
 let selection = window.getSelection();
 let fragment = document.createDocumentFragment();
 
-let textifier = new Textifier(); // { textify:plainDOM }; 
-// let markifier = new Markifier();
+// Instantiate base class
+let textifier = new Textifier();
+let markifier = new Markifier();
 
 test("Parse text", () => {
   range.setStart(
@@ -83,8 +89,3 @@ test.todo("Filter nodes", () => {
   )
   }
 )
-
-// write HTML file to template
-/*const template = document.createElement('template');
-template.innerHTML = await readFile(filePath);
-const fragment = template.content;*/

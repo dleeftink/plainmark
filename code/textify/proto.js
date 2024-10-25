@@ -12,7 +12,7 @@ const prototype = {
   restore,
   regroup,
   recoder,
-  kindsof,
+  kindsof//: rewrite(kindsof, [{ get: /", "/g , set: '___' }]),
 
 }
 

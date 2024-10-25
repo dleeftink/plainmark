@@ -59,12 +59,7 @@ export default class Textifier {
 
     let keep = ["A", "ARTICLE", "SECTION"];
     let skip = ["SUP"];
-    let drop = [
-      "embedded",
-      "metadata",
-      "interactive",
-      "navigation",
-    ];
+    let drop = ["embedded", "metadata", "interactive", "sectioning"];
 
     let prev, text, last;
     let walk = document.createTreeWalker(
@@ -145,57 +140,31 @@ export default class Textifier {
         path.push(node);
         node = node.parentNode;
       }
-      text.path = path;
 
-      if (
-        prev &&
-        path[0] &&
-        prev[1] &&
-        path[0].textContent &&
-        prev[1].textContent &&
-        path[0].textContent.trim().length > 0 &&
-        prev[1].textContent.trim().length > 0 &&
-        path[0].textContent.trim().length < 32 &&
-        prev[1].textContent.trim().length < 32 &&
-        path[0] == prev[1] &&
-        path[1] !== prev[0] &&
-        prev[0] !== undefined &&
-        code(path[0].textContent) ==
-          code(prev[1].textContent)
-      ) {
-        if (
-          path[0].kind.includes("phrasing") &&
-          prev[1].kind.includes("phrasing") &&
-          last.tagName != "BR"
-        ) {
-          flat.pop();
-          text.textContent = stem.textContent;
-        }
-      }
+      text.path = path;
       flat.push({ text, path });
 
+      let a = 0,
+        anode,
+        bnode,
+        b = 0;
       if (
-        prev &&
-        path[1] &&
-        prev[0] &&
-        path[1].textContent &&
-        prev[0].textContent &&
-        path[1].textContent.trim().length > 0 &&
-        prev[0].textContent.trim().length > 0 &&
-        path[1].textContent.trim().length < 32 &&
-        prev[0].textContent.trim().length < 32 &&
-        path[1] == prev[0] &&
-        path[0] !== prev[1] &&
-        path[1] !== undefined &&
-        code(path[1].textContent) ==
-          code(prev[0].textContent)
+        (anode = path.find(
+          (d, i) => ((a = i), d.tagName == "A"),
+        )) ==
+        (bnode = prev?.find(
+          (d, j) => ((b = j), d.tagName == "A"),
+        ))
       ) {
-        if (
-          path[1].kind.includes("phrasing") &&
-          prev[0].kind.includes("phrasing") &&
-          last.tagName != "BR"
-        ) {
-          flat.pop();
+        if (bnode !== undefined && Math.abs(a - b) < 2) {
+          if (b > a) {
+            flat.pop();
+            flat.pop();
+            flat.push({ text, path });
+            text.textContent = stem.textContent;
+          } else if (a > b) {
+            flat.pop();
+          }
         }
       }
 
@@ -265,209 +234,14 @@ export default class Textifier {
   kindsof(tagName) {
 
     let tags = {
-      phrasing: [
-        "a*",
-        "abbr",
-        "area*",
-        "audio",
-        "b",
-        "bdi",
-        "bdo",
-        "br",
-        "button",
-        "canvas",
-        "cite",
-        "code",
-        "data",
-        "date",
-        "datalist",
-        "del*",
-        "dfn",
-        "em",
-        "embed",
-        "i",
-        "iframe",
-        "img",
-        "input",
-        "ins*",
-        "kbd",
-        "keygen",
-        "label",
-        "link*",
-        "map*",
-        "mark",
-        "math",
-        "meta*",
-        "meter",
-        "noscript",
-        "object",
-        "output",
-        "picture",
-        "progress",
-        "q",
-        "ruby",
-        "s",
-        "samp",
-        "script",
-        "select",
-        "slot",
-        "small",
-        "span",
-        "strong",
-        "sub",
-        "sup",
-        "svg",
-        "template",
-        "textarea",
-        "time",
-        "u",
-        "var",
-        "video",
-        "wbr",
-        "Text*",
-      ],
-      embedded: [
-        "audio",
-        "canvas",
-        "embed",
-        "iframe",
-        "img",
-        "math",
-        "object",
-        "picture",
-        "svg",
-        "video",
-      ],
-      heading: [
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "h6",
-        "hgroup",
-      ],
+      phrasing: ["a*", "abbr", "area*", "audio", "b", "bdi", "bdo", "br", "button", "canvas", "cite", "code", "data", "date", "datalist", "del*", "dfn", "em", "embed", "i", "iframe", "img", "input", "ins*", "kbd", "keygen", "label", "link*", "map*", "mark", "math", "meta*", "meter", "noscript", "object", "output", "picture", "progress", "q", "ruby", "s", "samp", "script", "select", "slot", "small", "span", "strong", "sub", "sup", "svg", "template", "textarea", "time", "u", "var", "video", "wbr", "Text*"],
+      embedded: ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg", "video"],
+      heading: ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup"],
       sectioning: ["article", "aside", "nav", "section"],
-      metadata: [
-        "base",
-        "link",
-        "meta",
-        "noscript",
-        "script",
-        "style",
-        "template",
-        "title",
-      ],
-      navigation: ["article", "aside", "nav", "section"],
-      interactive: [
-        "a*",
-        "audio*",
-        "button",
-        "details",
-        "embed",
-        "iframe",
-        "img*",
-        "input*",
-        "keygen",
-        "label",
-        "object*",
-        "select",
-        "textarea",
-        "video*",
-      ],
-      flow: [
-        "a",
-        "abbr",
-        "address",
-        "area*",
-        "article",
-        "aside",
-        "audio",
-        "b",
-        "bdi",
-        "bdo",
-        "blockquote",
-        "br",
-        "button",
-        "canvas",
-        "cite",
-        "code",
-        "data",
-        "date",
-        "datalist",
-        "del",
-        "details",
-        "dfn",
-        "dialog",
-        "div",
-        "dl",
-        "em",
-        "embed",
-        "fieldset",
-        "figure",
-        "footer",
-        "form",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "h6",
-        "header",
-        "hgroup",
-        "hr",
-        "i",
-        "iframe",
-        "img",
-        "input",
-        "ins",
-        "kbd",
-        "keygen",
-        "label",
-        "li*!",
-        "link*",
-        "main*",
-        "map",
-        "mark",
-        "math",
-        "menu",
-        "meta*",
-        "meter",
-        "nav",
-        "noscript",
-        "object",
-        "ol",
-        "output",
-        "p",
-        "picture",
-        "pre",
-        "progress",
-        "q",
-        "ruby",
-        "s",
-        "samp",
-        "script",
-        "search",
-        "section",
-        "select",
-        "slot",
-        "small",
-        "span",
-        "strong",
-        "sub",
-        "sup",
-        "svg",
-        "table",
-        "template",
-        "textarea",
-        "time",
-        "u",
-        "ul",
-        "var",
-        "video",
-        "wbr",
-        "Text*",
-      ],
+      metadata: ["base", "link", "meta", "noscript", "script", "style", "template", "title"],
+      navigation: ["menu", "nav", "search"],
+      interactive: ["a*", "audio*", "button", "details", "embed", "iframe", "img*", "input*", "keygen", "label", "object*", "select", "textarea", "video*"],
+      flow: ["a", "abbr", "address", "area*", "article", "aside", "audio", "b", "bdi", "bdo", "blockquote", "br", "button", "canvas", "cite", "code", "data", "date", "datalist", "del", "details", "dfn", "dialog", "div", "dl", "em", "embed", "fieldset", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label", "li*!", "link*", "main*", "map", "mark", "math", "menu", "meta*", "meter", "nav", "noscript", "object", "ol", "output", "p", "picture", "pre", "progress", "q", "ruby", "s", "samp", "script", "search", "section", "select", "slot", "small", "span", "strong", "sub", "sup", "svg", "table", "template", "textarea", "time", "u", "ul", "var", "video", "wbr", "Text*"],
     };
 
     let kind = Object.entries(tags)
