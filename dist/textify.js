@@ -1,8 +1,7 @@
 export default class Textifier {
   constructor({
     drop = ["embedded", "metadata", "interactive", "sectioning"],
-    keep = ["A", "ARTICLE", "SECTION"],
-    skip = ["SUP"],
+    keep = ["A", "ARTICLE", "SECTION"], skip = ["SUP"],
     pick = ["href"],
     step = 8,
     hops = 2,
