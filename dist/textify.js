@@ -5,6 +5,8 @@ export default class Textifier {
     skip = ["SUP"],
     pick = ["href"],
     step = 8,
+    hops = 2,
+    same = 2,
   } = {}) {
     const opts = arguments[0];
     this.opts = { ...opts };
@@ -123,6 +125,9 @@ export default class Textifier {
     let skip = this.opts.skip ?? ["SUP"];
     let drop = this.opts.drop ?? ["embedded", "metadata", "interactive", "sectioning"];
 
+    let dist = this.opts.hops ?? 2;
+    let same = this.opts.same ?? 2;
+
     let prev, text, past;
     let walk = document.createTreeWalker(
       host,
@@ -143,6 +148,7 @@ export default class Textifier {
       let node = stem;
       let path = [];
       let safe = 0;
+      let hops = 0;
       let attr;
 
       let tag = stem.tagName;
@@ -183,6 +189,7 @@ export default class Textifier {
 
         if (node.skip) {
           node = node?.parentNode;
+          hops++;
           continue;
         } else {
           node.kind = kind(node.tagName);
@@ -190,6 +197,7 @@ export default class Textifier {
             drop.some((kind) => node.kind.has(kind)) ||
             skip.includes(node.tagName);
           if (node.skip && !keep.includes(node.tagName)) {
+            hops++;
             continue;
           } else {
             delete node.skip;
@@ -229,8 +237,23 @@ export default class Textifier {
         node = node.parentNode;
       }
 
-      text.path = path;
-      list.push({ text, path });
+      if (hops < dist) {
+        let dupl = new Set().add(text.textContent);
+        let span = path.length;
+
+        for (let n = 0; n < span; n++) {
+          let node = path[n];
+          if (node.kind.has("phrasing"))
+            dupl.add(node.textContent);
+          if (dupl.size > same) break;
+        }
+
+        if (dupl.size <= same) {
+          text.path = path;
+          text.hops = hops;
+          list.push({ text, path });
+        }
+      }
 
       prev = path;
       past = text;
