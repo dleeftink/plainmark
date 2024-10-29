@@ -13,7 +13,7 @@ export function group(flat) {
       if (!(text.tagName == "BR" && text.textContent.trim() == 0)) continue;
     }
 
-    if (path[0].kind[0] == "phrasing") {
+    if (path[0] && path[0].kind[0] == "phrasing") {
       data = [...(fuse.get(path[1]) ?? [])].concat(text);
       fuse.set(path[1], data);
       last = path[1];

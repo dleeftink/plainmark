@@ -20,12 +20,13 @@ export default class Textifier {
     
     Object.assign(this.constructor.prototype, prototype);
     
-    this.cache = this.reindex();
     const opts = arguments[0];
-     this.opts = { ...opts };
-     this.base = new Object();
-     this.flat = new Array();
-     this.fuse = new Map();
+    this.opts = { ...opts };
+    this.base = new Object();
+    this.flat = new Array();
+    this.fuse = new Map();
+    
+    this.reindex(); // populates base
     
   }
 
@@ -33,7 +34,7 @@ export default class Textifier {
 
     let frag = fragment = this.recheck(fragment);
 
-    let { dict:base,time:A } = this.cache;
+    let { dict:base,time:A } = this.reindex(null); // retrieves base 
     let { list:flat,time:B } = this.restore(frag);
     let { dict:fuse,time:C } = this.regroup(flat);
 

@@ -1,25 +1,25 @@
 export default class Textifier {
+
   constructor({
     drop = ["embedded", "metadata", "interactive", "sectioning"],
     keep = ["A", "ARTICLE", "SECTION"],
     skip = ["SUP"],
     pick = ["href"],
-    step = -1,
+    step = 8,
   } = {}) {
-    this.cache = this.reindex();
     const opts = arguments[0];
     this.opts = { ...opts };
     this.base = new Object();
     this.flat = new Array();
     this.fuse = new Map();
-
+    this.reindex();
   }
 
   textify(fragment) {
 
     let frag = (fragment = this.recheck(fragment));
 
-    let { dict: base, time: A } = this.cache;
+    let { dict: base, time: A } = this.reindex(null);
     let { list: flat, time: B } = this.restore(frag);
     let { dict: fuse, time: C } = this.regroup(flat);
 
@@ -52,45 +52,46 @@ export default class Textifier {
   reindex(recs) {
 
     let perf = performance.now();
+    let base = this.base ?? new Object();
 
-    let base = this?.cache?.dict ?? new Object();
+    if (Object.keys(base).length == 0 || recs?.length > 0) {
+      let data =
+        recs ??
+        Object.entries({
+          phrasing: ["a*", "span", "img", "br", "script", "meta*", "link*", "i", "input", "strong", "b", "label", "button", "svg", "em", "noscript", "time", "iframe", "small", "select", "abbr", "sup", "ins*", "u", "picture", "area*", "code", "textarea", "video", "cite", "dfn", "del*", "date", "keygen", "Text*", "s", "wbr", "sub", "kbd", "object", "map*", "var", "embed", "canvas", "template", "bdi", "q", "audio", "mark", "samp", "ruby", "bdo", "data", "meter", "output", "slot", "progress", "math", "datalist"],
+          embedded: ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg", "video"],
+          heading: ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup"],
+          sectioning: ["section", "article", "nav", "aside"],
+          metadata: ["base", "link", "meta", "noscript", "script", "style", "template", "title"],
+          navigation: ["nav", "menu", "nav"],
+          interactive: ["a*", "img*", "input*", "label", "button", "iframe", "select", "textarea", "video*", "keygen", "object*", "embed", "audio*", "details"],
+          flow: ["div", "a", "span", "li*!", "img", "br", "p", "script", "ul", "meta*", "link*", "i", "input", "strong", "h2", "h3", "b", "h4", "label", "table", "button", "svg", "section", "article", "em", "form", "h1", "noscript", "header", "time", "figure", "dl", "h5", "iframe", "hr", "footer", "nav", "small", "aside", "select", "h6", "abbr", "sup", "ins", "u", "ol", "blockquote", "picture", "fieldset", "area*", "code", "textarea", "video", "cite", "dfn", "main*", "pre", "del", "address", "date", "keygen", "search", "Text*", "s", "wbr", "sub", "kbd", "object", "map", "hgroup", "var", "embed", "menu", "canvas", "template", "bdi", "q", "audio", "mark", "details", "samp", "ruby", "bdo", "data", "meter", "output", "slot", "progress", "dialog", "math", "datalist"],
+        });
 
-    let data =
-      recs ??
-      Object.entries({
-        phrasing: ["a*", "span", "img", "br", "script", "meta*", "link*", "i", "input", "strong", "b", "label", "button", "svg", "em", "noscript", "time", "iframe", "small", "select", "abbr", "sup", "ins*", "u", "picture", "area*", "code", "textarea", "video", "cite", "dfn", "del*", "date", "keygen", "Text*", "s", "wbr", "sub", "kbd", "object", "map*", "var", "embed", "canvas", "template", "bdi", "q", "audio", "mark", "samp", "ruby", "bdo", "data", "meter", "output", "slot", "progress", "math", "datalist"],
-        embedded: ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg", "video"],
-        heading: ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup"],
-        sectioning: ["section", "article", "nav", "aside"],
-        metadata: ["base", "link", "meta", "noscript", "script", "style", "template", "title"],
-        navigation: ["nav", "menu", "nav"],
-        interactive: ["a*", "img*", "input*", "label", "button", "iframe", "select", "textarea", "video*", "keygen", "object*", "embed", "audio*", "details"],
-        flow: ["div", "a", "span", "li*!", "img", "br", "p", "script", "ul", "meta*", "link*", "i", "input", "strong", "h2", "h3", "b", "h4", "label", "table", "button", "svg", "section", "article", "em", "form", "h1", "noscript", "header", "time", "figure", "dl", "h5", "iframe", "hr", "footer", "nav", "small", "aside", "select", "h6", "abbr", "sup", "ins", "u", "ol", "blockquote", "picture", "fieldset", "area*", "code", "textarea", "video", "cite", "dfn", "main*", "pre", "del", "address", "date", "keygen", "search", "Text*", "s", "wbr", "sub", "kbd", "object", "map", "hgroup", "var", "embed", "menu", "canvas", "template", "bdi", "q", "audio", "mark", "details", "samp", "ruby", "bdo", "data", "meter", "output", "slot", "progress", "dialog", "math", "datalist"],
-      });
+      let span = data.length;
+      for (let col = 0; col < span; col++) {
+        let [kind, list] = data[col];
+        let size = list.length;
 
-    let span = data.length;
-    for (let col = 0; col < span; col++) {
-      let [kind, list] = data[col];
-      let size = list.length;
+        for (let row = 0; row < size; row++) {
+          let type = list[row].toUpperCase().split(/(\*)/);
+          let edge = type[1] ?? [];
+          type = type[0];
+          let sets = base[type];
 
-      for (let row = 0; row < size; row++) {
-        let type = list[row].toUpperCase().split(/(\*)/);
-        let edge = type[1] ?? [];
-        type = type[0];
-        let sets = base[type];
-
-        if (sets) {
-          sets.add(kind);
-          if (edge.length) sets.add(edge);
-        } else {
-          base[type] = new Set([...edge]).add(kind);
+          if (sets) {
+            sets.add(kind);
+            if (edge.length) sets.add(edge);
+          } else {
+            base[type] = new Set([...edge]).add(kind);
+          }
         }
       }
     }
 
     return {
       time: performance.now() - perf,
-      dict: base,
+      dict: (this.base = base),
     };
 
   }
@@ -108,7 +109,7 @@ export default class Textifier {
       fragment ??
       getSelection().getRangeAt(0).cloneContents();
     let body = document.createElement("body");
-    body.appendChild(frag);
+    body.appendChild(frag.cloneNode(true));
 
     host.appendChild(body);
     root.appendChild(main);
@@ -172,7 +173,7 @@ export default class Textifier {
         delete node.skip;
       }
 
-      let step = this.opts.step ?? 8;
+      let step = Math.max(0, this.opts.step ?? 8);
       safe = 0;
 
       while (node.parentNode && safe < step) {
@@ -263,7 +264,7 @@ export default class Textifier {
           continue;
       }
 
-      if (path[0].kind[0] == "phrasing") {
+      if (path[0] && path[0].kind[0] == "phrasing") {
         data = [...(fuse.get(path[1]) ?? [])].concat(text);
         fuse.set(path[1], data);
         last = path[1];

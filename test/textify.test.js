@@ -69,6 +69,7 @@ test("I/O", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
   
+  // clone the fragment, as textify consumes it
   let exit = textifier.textify(fragment);
   
   expect(exit).toMatchObject({ 
@@ -87,6 +88,16 @@ test("I/O", () => {
     fuse: expect.any(Number) 
   })
 
+  // test root traversal depth
+
+  textifier.opts.step = 1;
+  exit = textifier.textify(fragment);  
+  expect(exit.flat[0].path.length == 1);
+
+  textifier.opts.step = 0;
+  exit = textifier.textify(fragment);
+  expect(exit.flat[0].path.length == 0);
+
     console.log(
       "Completed in:", Object.values(exit.time).reduce((a,b)=>a+b,0)
     )
@@ -95,6 +106,8 @@ test("I/O", () => {
 );
 
 test("Parse text", () => {
+
+  textifier.opts.step = 8;
   
   range.setStart(
     document.querySelector("#mf-section-0 p:nth-of-type(2) i"),
@@ -120,6 +133,8 @@ test("Parse text", () => {
 );
 
 test("Parse list", () => {
+
+  textifier.opts.step = 8;
 
   range.setStart(
     document.querySelector(".mf-section-2 .mw-heading.mw-heading3"),

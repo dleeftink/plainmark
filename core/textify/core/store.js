@@ -14,9 +14,10 @@ export function store(fragment) {
   let main = document.createElement('main');
   let host = main.attachShadow({ mode: 'open' });
 
+  // clone fragment instead of consuming
   let frag = fragment ?? getSelection().getRangeAt(0).cloneContents();  
   let body = document.createElement("body");
-      body.appendChild(frag);
+      body.appendChild(frag.cloneNode(true));
 
       host.appendChild(body);
       root.appendChild(main);  
@@ -81,7 +82,7 @@ export function store(fragment) {
     }
 
     //dict.set(text, path); 
-    let step = this.opts.step ?? 8; safe = 0
+    let step = Math.max(0,this.opts.step ?? 8); safe = 0
  
     // find path or merge with existing
     while (node.parentNode && safe < step) {
