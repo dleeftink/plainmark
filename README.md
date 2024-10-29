@@ -1,4 +1,4 @@
-# `plainmark`
+# plainmark
 A library of plain Markdown tools.
 
 ## `new Textifier()`
