@@ -69,6 +69,7 @@ test("I/O", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
   
+  // clone the fragment, as textify consumes it
   let exit = textifier.textify(fragment);
   
   expect(exit).toMatchObject({ 
@@ -87,6 +88,16 @@ test("I/O", () => {
     fuse: expect.any(Number) 
   })
 
+  // test root traversal depth
+
+  textifier.opts.step = 1;
+  exit = textifier.textify(fragment);  
+  expect(exit.flat[0].path.length == 1);
+
+  textifier.opts.step = 0;
+  exit = textifier.textify(fragment);
+  expect(exit.flat[0].path.length == 0);
+
     console.log(
       "Completed in:", Object.values(exit.time).reduce((a,b)=>a+b,0)
     )
@@ -95,6 +106,8 @@ test("I/O", () => {
 );
 
 test("Parse text", () => {
+
+  textifier.opts.step = 8;
   
   range.setStart(
     document.querySelector("#mf-section-0 p:nth-of-type(2) i"),
@@ -110,16 +123,28 @@ test("Parse text", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
+  let result = textifier.textify(fragment)
+
+  let block = [...result.fuse]
+    .map(([wrap,nest]) => [...nest]
+      .map(([form,list])=>list
+        .map(({text,path})=>text.textContent).join(""))
+      .join(""))
+    .join("\n")
+
+
     console.log(
-      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-      [...textifier.textify(fragment).fuse].map(([_,val])=> val.map(d=>d.textContent).join(''))[0] , '\n' ,
-      [...textifier.textify().fuse].map(([key,val])=> key.tagName + ' <- ' + val.map(d=>d.textContent).join("")).filter(d=>d.split('<-')[1].trim()).join('\n\n').replace(/\n\n\n/g,'\n\n')
+      block
+
+      //[...textifier.textify().fuse].map(([key,val])=> key.tagName + ' <- ' + val.map(d=>d.textContent).join("")).filter(d=>d.split('<-')[1].trim()).join('\n\n').replace(/\n\n\n/g,'\n\n')
     )
 
   }
 );
 
 test("Parse list", () => {
+
+  textifier.opts.step = 8;
 
   range.setStart(
     document.querySelector(".mf-section-2 .mw-heading.mw-heading3"),
@@ -134,9 +159,17 @@ test("Parse list", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
+  let result = textifier.textify(fragment)
+
+  let list = [...result.fuse]
+    .map(([wrap,nest]) => [wrap.tagName,[...nest]
+      .map(([form,list])=> list
+        .map(({text,path})=>text.textContent).join(""))
+      .join("").slice(0,32) + '...' 
+    ])
+
     console.log(
-      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-      [...textifier.textify(fragment).fuse].map(([key,val])=> [key.tagName,val.map(d=>d.textContent).join('').slice(0,16) + '...' ])
+      list
     )
 
   }
@@ -159,11 +192,21 @@ test("Filter nodes", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
-  textifier.opts.skip = ["FIGCAPTION","FIGURE","SUP"]
+  textifier.opts.skip = [/*"BODY",*/"FIGCAPTION","FIGURE","NOSCRIPT"];
+  textifier.opts.keep = ["A"];
+
+  textifier.opts.hops = 2;
+  textifier.opts.same = 2;
+
+  let result = textifier.textify(fragment)
 
     console.log(
-      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-      [...textifier.textify(fragment).fuse].map(([key,val])=> [key?.tagName,val.map(d=>d.textContent).join('').slice(0,16) + '...' ])
+      result.flat.map(({text,path})=>[
+        text.wrap?.tagName,
+        text.hops,
+        path.map(d=>d.tagName).join('>'),
+        text.textContent.slice(0,32) + '...'
+      ]).slice(0,8),
     )
   }
 )
