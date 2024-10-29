@@ -123,10 +123,20 @@ test("Parse text", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
+  let result = textifier.textify(fragment)
+
+  let block = [...result.fuse]
+    .map(([wrap,nest]) => [...nest]
+      .map(([form,list])=>list
+        .map(({text,path})=>text.textContent).join(""))
+      .join(""))
+    .join("\n")
+
+
     console.log(
-      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-      [...textifier.textify(fragment).fuse].map(([_,val])=> val.map(d=>d.textContent).join(''))[0] , '\n' ,
-      [...textifier.textify().fuse].map(([key,val])=> key.tagName + ' <- ' + val.map(d=>d.textContent).join("")).filter(d=>d.split('<-')[1].trim()).join('\n\n').replace(/\n\n\n/g,'\n\n')
+      block
+
+      //[...textifier.textify().fuse].map(([key,val])=> key.tagName + ' <- ' + val.map(d=>d.textContent).join("")).filter(d=>d.split('<-')[1].trim()).join('\n\n').replace(/\n\n\n/g,'\n\n')
     )
 
   }
@@ -149,9 +159,18 @@ test("Parse list", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
+  let result = textifier.textify(fragment)
+
+  let block = [...result.fuse]
+    .map(([wrap,nest]) => '\n' + (wrap.tagName ?? '' ) + '\n' + [...nest]
+      .map(([form,list])=> list
+        .map(({text,path})=>text.textContent).join(""))
+      .join("").slice(0,32) + '...')
+    .join("\n").replace(/\n{2,}/g,'\n\n')
+
     console.log(
-      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-      [...textifier.textify(fragment).fuse].map(([key,val])=> [key.tagName,val.map(d=>d.textContent).join('').slice(0,16) + '...' ])
+      //textifier.textify(fragmentdict.flat.map(d=>d.text.text).Content)
+      block
     )
 
   }
@@ -176,9 +195,18 @@ test("Filter nodes", () => {
 
   textifier.opts.skip = ["FIGCAPTION","FIGURE","SUP"]
 
+  let result = textifier.textify(fragment)
+
+  let block = [...result.fuse]
+    .map(([wrap,nest]) => '\n' + (wrap.tagName ?? '' ) + '\n' + [...nest]
+      .map(([form,list])=> list
+        .map(({text,path})=>text.textContent).join(""))
+      .join("").slice(0,32) + '...')
+    .join("\n").replace(/\n{2,}/g,'\n\n')
+
     console.log(
       //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-      [...textifier.textify(fragment).fuse].map(([key,val])=> [key?.tagName,val.map(d=>d.textContent).join('').slice(0,16) + '...' ])
+      result.flat.map(({text,path})=>[text.wrap.innerHTML,text.textContent]).slice(0,8)
     )
   }
 )

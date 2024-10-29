@@ -35,7 +35,7 @@ export function store(fragment) {
   let skip = this.opts.skip ?? ["SUP"];
   let drop = this.opts.drop ?? ["embedded", "metadata", "interactive","sectioning"];
   
-  let prev, text, last;
+  let prev, text, past;
   let walk = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
   
   // process fragment textnodes
@@ -45,7 +45,7 @@ export function store(fragment) {
 
     // how to pass parentNode?                             
     if(/^\n+$/.test(text.textContent.replaceAll(' ',''))) text = document.createElement('br')
-    if(text.tagName === 'BR' && last?.tagName === 'BR') continue
+    if(text.tagName === 'BR' && past?.tagName === 'BR') continue
     let atts = [...(stem?.attributes || [])];
 
     let node = stem;
@@ -82,7 +82,8 @@ export function store(fragment) {
     }
 
     //dict.set(text, path); 
-    let step = Math.max(0,this.opts.step ?? 8); safe = 0
+    let step = Math.max(0,this.opts.step ?? 8);
+    let last = node; safe = 0;
  
     // find path or merge with existing
     while (node.parentNode && safe < step) {
@@ -107,6 +108,31 @@ export function store(fragment) {
         path = path.concat(node.parentNode.path);
         continue;
       }
+
+      // find nearest non-phrasing element ('wrapper') in path
+      if(!text.wrap) {
+        if(last && last.kind.has("phrasing") && !node.kind.has("phrasing")) {
+          // if we encounter the first not-phrasing tag
+          text.wrap = node;
+        } else if(past && text.tagName == 'BR') {
+          // if the current 'text' node is a 'break' element
+          text.wrap = past.wrap
+        } else if (path.length <= 1 && !node.kind.has("phrasing")) {
+          // if we are at the first node in the selection
+          // or the current path is shallow
+          text.wrap = last
+        } last = node;
+      };
+  
+      // find latest phrasing element ('formatting') in path
+      // updates each 'text' node with last phrasing element
+      if(node.kind.has('phrasing')) {
+        text.form = node;
+      // explicitly set 'text' node to null when no phrasing elements in path
+      } else if(path.length == 0) {
+        text.form = null;
+      }
+
       path.push(node);
       node = node.parentNode;
     }
@@ -114,33 +140,8 @@ export function store(fragment) {
     text.path = path;
     list.push({ text, path }); // [path] only for dev purposes -> [text] nodes contain path also;
 
-    // general merges pattern
-    // todo: content equality
-
-    let a = 0,anode,bnode,b = 0;
-    if ((anode = path.find((d, i) => ((a = i), d.tagName == "A"))) == (bnode = prev?.find((d, j) => ((b = j), d.tagName == "A")))) {
-      if (bnode !== undefined && Math.abs(a-b) < 2) {
-        if (b > a) { 
-
-          // pre-merge strategy
-          // list.pop(); list.pop(); 
-          list.length -= 2;
-          list.push({text,path}); text.textContent = stem.textContent
-
-        } else if (a > b) {
-
-          list.length -= 1;
-          // post-merge strategy
-          // list.pop(); 
-          // list.push({ text, path });
-          // text.textContent = last.parentNode.textContent;
-
-        }
-      }
-    }
-
     prev = path;
-    last = text;
+    past = text;
 
   }
  
