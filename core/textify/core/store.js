@@ -30,10 +30,13 @@ export function store(fragment) {
   let pick = this.opts.pick ?? ["href"];
 
   // node precedence k > s > d
-    
   let keep = this.opts.keep ?? ["A","ARTICLE","SECTION"];
   let skip = this.opts.skip ?? ["SUP"];
   let drop = this.opts.drop ?? ["embedded", "metadata", "interactive","sectioning"];
+
+  // max hops & same textContents
+  let dist = this.opts.hops ?? 2;
+  let same = this.opts.same ?? 2;
   
   let prev, text, past;
   let walk = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
@@ -51,6 +54,7 @@ export function store(fragment) {
     let node = stem;
     let path = [];
     let safe = 0;
+    let hops = 0;
     let attr;
 
     let tag = stem.tagName;
@@ -91,14 +95,16 @@ export function store(fragment) {
 
       // add skip condition to non-visited nodes
       if (node.skip) {
-        node = node?.parentNode;
+        node = node?.parentNode; hops++
         continue;
       } else {
         node.kind = kind(node.tagName);
         node.skip = drop.some(kind=>node.kind.has(kind)) || skip.includes(node.tagName)
         if(node.skip && !keep.includes(node.tagName)) {
+          hops++;
           continue
         } else {
+          // hops--; // should you decrease hops? -> probably not, because there's no prior increase
           delete node.skip;
         }
       } 
@@ -137,8 +143,27 @@ export function store(fragment) {
       node = node.parentNode;
     }
 
-    text.path = path;
-    list.push({ text, path }); // [path] only for dev purposes -> [text] nodes contain path also;
+    // not necessarily the safest way to drop content duplicates
+    // safer would building the whole path -> then filter
+    // but that would add some performance overhead
+    if (hops < dist) { // && new Set([text,...path.filter(node=>node.kind.has('phrasing'))].map(node=>node.textContent)).size == 1
+ 
+      let dupl = new Set().add(text.textContent);
+      let span = path.length;
+ 
+      for (let n = 0; n < span; n++) {
+        let node = path[n]
+        if(node.kind.has("phrasing")) dupl.add(node.textContent)
+        if (dupl.size > same ) break;
+      }
+
+      if (dupl.size <= same ) {
+        text.path = path;
+        text.hops = hops;
+        list.push({ text, path }); // [path] only for dev purposes -> [text] nodes contain path also;
+      }
+
+    }
 
     prev = path;
     past = text;

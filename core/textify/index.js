@@ -14,7 +14,9 @@ export default class Textifier {
     keep = ["A","ARTICLE","SECTION"], 
     skip = ["SUP"],
     pick = ["href"] , 
-    step = 8
+    step = 8,
+    hops = 2,
+    same = 2
   
   } = {}) {
     

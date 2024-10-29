@@ -193,13 +193,21 @@ test("Filter nodes", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
-  textifier.opts.skip = ["SECTION","FIGCAPTION","FIGURE","SUP"]
-  textifier.opts.keep = ["A"]
+  textifier.opts.skip = [/*"BODY",*/"FIGCAPTION","FIGURE","NOSCRIPT"];
+  textifier.opts.keep = ["A"];
+
+  textifier.opts.hops = 2;
+  textifier.opts.same = 2;
 
   let result = textifier.textify(fragment)
 
     console.log(
-      result.flat.map(({text,path})=>[text.wrap?.tagName,text.textContent]).slice(0,8)
+      result.flat.map(({text,path})=>[
+        text.wrap?.tagName,
+        text.hops,
+        path.map(d=>d.tagName).join('>'),
+        text.textContent.slice(0,32) + '...'
+      ]).slice(0,8),
     )
   }
 )
