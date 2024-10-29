@@ -206,7 +206,7 @@ test("Filter nodes", () => {
 
     console.log(
       //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-      result.flat.map(({text,path})=>[text.wrap.innerHTML,text.textContent]).slice(0,8)
+      result.flat.map(({text,path})=>[text.wrap.tagName,text.textContent]).slice(0,8)
     )
   }
 )
