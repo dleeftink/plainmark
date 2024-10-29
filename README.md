@@ -1,7 +1,7 @@
-# Plainmark
+# `plainmark`
 A library of plain Markdown tools.
 
-## `Textifier` class
+## `new Textifier()`
 Using the `textify()` method:
 
 ``` js
