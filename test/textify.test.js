@@ -161,16 +161,15 @@ test("Parse list", () => {
 
   let result = textifier.textify(fragment)
 
-  let block = [...result.fuse]
-    .map(([wrap,nest]) => '\n' + (wrap.tagName ?? '' ) + '\n' + [...nest]
+  let list = [...result.fuse]
+    .map(([wrap,nest]) => [wrap.tagName,[...nest]
       .map(([form,list])=> list
         .map(({text,path})=>text.textContent).join(""))
-      .join("").slice(0,32) + '...')
-    .join("\n").replace(/\n{2,}/g,'\n\n')
+      .join("").slice(0,32) + '...' 
+    ])
 
     console.log(
-      //textifier.textify(fragmentdict.flat.map(d=>d.text.text).Content)
-      block
+      list
     )
 
   }
