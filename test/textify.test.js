@@ -193,20 +193,13 @@ test("Filter nodes", () => {
 
   fragment = document.getSelection().getRangeAt(0).cloneContents();
 
-  textifier.opts.skip = ["FIGCAPTION","FIGURE","SUP"]
+  textifier.opts.skip = ["SECTION","FIGCAPTION","FIGURE","SUP"]
+  textifier.opts.keep = ["A"]
 
   let result = textifier.textify(fragment)
 
-  let block = [...result.fuse]
-    .map(([wrap,nest]) => '\n' + (wrap.tagName ?? '' ) + '\n' + [...nest]
-      .map(([form,list])=> list
-        .map(({text,path})=>text.textContent).join(""))
-      .join("").slice(0,32) + '...')
-    .join("\n").replace(/\n{2,}/g,'\n\n')
-
     console.log(
-      //textifier.textify(fragment).dict.flat.map(d=>d.text.textContent)
-      result.flat.map(({text,path})=>[text.wrap.tagName,text.textContent]).slice(0,8)
+      result.flat.map(({text,path})=>[text.wrap?.tagName,text.textContent]).slice(0,8)
     )
   }
 )
