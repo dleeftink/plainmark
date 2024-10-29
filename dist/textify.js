@@ -1,5 +1,4 @@
 export default class Textifier {
-
   constructor({
     drop = ["embedded", "metadata", "interactive", "sectioning"],
     keep = ["A", "ARTICLE", "SECTION"],
@@ -12,7 +11,9 @@ export default class Textifier {
     this.base = new Object();
     this.flat = new Array();
     this.fuse = new Map();
+
     this.reindex();
+
   }
 
   textify(fragment) {
@@ -63,7 +64,7 @@ export default class Textifier {
           heading: ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup"],
           sectioning: ["section", "article", "nav", "aside"],
           metadata: ["base", "link", "meta", "noscript", "script", "style", "template", "title"],
-          navigation: ["nav", "menu", "nav"],
+          navigation: ["nav", "menu", "search", "dialog"],
           interactive: ["a*", "img*", "input*", "label", "button", "iframe", "select", "textarea", "video*", "keygen", "object*", "embed", "audio*", "details"],
           flow: ["div", "a", "span", "li*!", "img", "br", "p", "script", "ul", "meta*", "link*", "i", "input", "strong", "h2", "h3", "b", "h4", "label", "table", "button", "svg", "section", "article", "em", "form", "h1", "noscript", "header", "time", "figure", "dl", "h5", "iframe", "hr", "footer", "nav", "small", "aside", "select", "h6", "abbr", "sup", "ins", "u", "ol", "blockquote", "picture", "fieldset", "area*", "code", "textarea", "video", "cite", "dfn", "main*", "pre", "del", "address", "date", "keygen", "search", "Text*", "s", "wbr", "sub", "kbd", "object", "map", "hgroup", "var", "embed", "menu", "canvas", "template", "bdi", "q", "audio", "mark", "details", "samp", "ruby", "bdo", "data", "meter", "output", "slot", "progress", "dialog", "math", "datalist"],
         });
@@ -122,7 +123,7 @@ export default class Textifier {
     let skip = this.opts.skip ?? ["SUP"];
     let drop = this.opts.drop ?? ["embedded", "metadata", "interactive", "sectioning"];
 
-    let prev, text, last;
+    let prev, text, past;
     let walk = document.createTreeWalker(
       host,
       NodeFilter.SHOW_TEXT,
@@ -135,7 +136,7 @@ export default class Textifier {
         /^\n+$/.test(text.textContent.replaceAll(" ", ""))
       )
         text = document.createElement("br");
-      if (text.tagName === "BR" && last?.tagName === "BR")
+      if (text.tagName === "BR" && past?.tagName === "BR")
         continue;
       let atts = [...(stem?.attributes || [])];
 
@@ -174,6 +175,7 @@ export default class Textifier {
       }
 
       let step = Math.max(0, this.opts.step ?? 8);
+      let last = node;
       safe = 0;
 
       while (node.parentNode && safe < step) {
@@ -198,6 +200,31 @@ export default class Textifier {
           path = path.concat(node.parentNode.path);
           continue;
         }
+
+        if (!text.wrap) {
+          if (
+            last &&
+            last.kind.has("phrasing") &&
+            !node.kind.has("phrasing")
+          ) {
+            text.wrap = node;
+          } else if (past && text.tagName == "BR") {
+            text.wrap = past.wrap;
+          } else if (
+            path.length <= 1 &&
+            !node.kind.has("phrasing")
+          ) {
+            text.wrap = last;
+          }
+          last = node;
+        }
+
+        if (node.kind.has("phrasing")) {
+          text.form = node;
+        } else if (path.length == 0) {
+          text.form = null;
+        }
+
         path.push(node);
         node = node.parentNode;
       }
@@ -205,31 +232,8 @@ export default class Textifier {
       text.path = path;
       list.push({ text, path });
 
-      let a = 0,
-        anode,
-        bnode,
-        b = 0;
-      if (
-        (anode = path.find(
-          (d, i) => ((a = i), d.tagName == "A"),
-        )) ==
-        (bnode = prev?.find(
-          (d, j) => ((b = j), d.tagName == "A"),
-        ))
-      ) {
-        if (bnode !== undefined && Math.abs(a - b) < 2) {
-          if (b > a) {
-            list.length -= 2;
-            list.push({ text, path });
-            text.textContent = stem.textContent;
-          } else if (a > b) {
-            list.length -= 1;
-          }
-        }
-      }
-
       prev = path;
-      last = text;
+      past = text;
     }
 
     host.innerHTML = "";
@@ -249,34 +253,21 @@ export default class Textifier {
     let last;
     fuse.clear();
 
-    let text, path, data;
+    let text, path, data, list, node;
     const size = flat.length;
     for (var i = 0; i < size; i++) {
       [text, path] = Object.values(flat[i]);
 
-      if (!text.parentElement) {
-        if (
-          !(
-            text.tagName == "BR" &&
-            text.textContent.trim() == 0
-          )
-        )
-          continue;
-      }
+      node = text.form ?? text;
 
-      if (path[0] && path[0].kind[0] == "phrasing") {
-        data = [...(fuse.get(path[1]) ?? [])].concat(text);
-        fuse.set(path[1], data);
-        last = path[1];
-      } else if (text.tagName == "BR") {
-        data = [...(fuse.get(last) ?? [])].concat(text);
-        fuse.set(last, data);
-      } else {
-        data = [...(fuse.get(path[0]) ?? [])].concat(text);
-        fuse.set(path[0], data);
-        last = path[0];
-      }
+      data = fuse.get(text.wrap) ?? new Map();
+      (list = data.get(node))
+        ? list.push({ text, path })
+        : data.set(node, [{ text, path }]);
+
+      fuse.set(text.wrap, data);
     }
+
     return {
       time: performance.now() - perf,
       dict: (this.fuse = fuse),
