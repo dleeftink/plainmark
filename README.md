@@ -2,6 +2,7 @@
 A library of plain Markdown tools.
 
 ## `new Textifier()`
+Uses a `TreeWalker` to visit text nodes and merge newlines to preceding parent elements.
 
 ### Selection to structured text
 > Using the `textify()` method on a `DocumentFragment`
@@ -45,8 +46,7 @@ let HTMLFrag = `
   </article>`
 
 let template = document.createElement('template');
-    template.innerHTML = HTMLFrag
-let fragment = template.content;
+    template.innerHTML = HTMLFrag;
 
 let textifier = new Textifier({ 
    
@@ -56,8 +56,9 @@ let textifier = new Textifier({
    hops: 2, // drop text when the parent node is skipped multiple times
    same: 2, // drop text when the same textContent is contained multiple times
 
-}).textify(fragment);
+}).textify(template.content);
 
+// return TAG:{text}
 let result = [...textifier.fuse]
   .map(([block,inline]) => [[block],...inline]
     .map(([wrap,line],i)=> i == 0 ? wrap.tagName : (wrap.tagName ?? 'T') + ':{' + line
