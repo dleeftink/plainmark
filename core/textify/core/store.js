@@ -38,7 +38,7 @@ export function store(fragment) {
   let dist = this.opts.hops ?? 2;
   let same = this.opts.same ?? 2;
   
-  let prev, text, past;
+  let prev, text, temp, past;
   let walk = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
   
   // process fragment textnodes
@@ -47,7 +47,9 @@ export function store(fragment) {
     let stem = text.parentNode;
 
     // how to pass parentNode?                             
-    if(text.textContent.replaceAll(' ','').indexOf('\n') == 0) { 
+    if(((temp = text.textContent.replaceAll(' ','')), 
+      temp.indexOf('\n') == 0 && temp.replaceAll('\n','').replaceAll('\t','').length == 0
+    )) { 
       text = document.createElement('br');
       text.textContent = '\n'
     }
@@ -98,7 +100,8 @@ export function store(fragment) {
 
       // add skip condition to non-visited nodes
       if (node.skip) {
-        node = node?.parentNode; hops++
+        hops++;
+        node = node?.parentNode;
         continue;
       } else {
         node.kind = kind(node.tagName);

@@ -126,7 +126,7 @@ export default class Textifier {
     let dist = this.opts.hops ?? 2;
     let same = this.opts.same ?? 2;
 
-    let prev, text, past;
+    let prev, text, temp, past;
     let walk = document.createTreeWalker(
       host,
       NodeFilter.SHOW_TEXT,
@@ -136,9 +136,10 @@ export default class Textifier {
       let stem = text.parentNode;
 
       if (
-        text.textContent
-          .replaceAll(" ", "")
-          .indexOf("\n") == 0
+        ((temp = text.textContent.replaceAll(" ", "")),
+        temp.indexOf("\n") == 0 &&
+          temp.replaceAll("\n", "").replaceAll("\t", "")
+            .length == 0)
       ) {
         text = document.createElement("br");
         text.textContent = "\n";
@@ -190,8 +191,8 @@ export default class Textifier {
         safe++;
 
         if (node.skip) {
-          node = node?.parentNode;
           hops++;
+          node = node?.parentNode;
           continue;
         } else {
           node.kind = kind(node.tagName);
