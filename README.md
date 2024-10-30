@@ -6,6 +6,7 @@ A library of plain Markdown tools.
 Uses a `TreeWalker` to visit text nodes and merge newlines to preceding parent elements.
 For each textNode, determines whether a tag is `phrasing` or `blocking` and builds a nested map that groups textNodes by the closest `blocking` node, and subgroups them by the farthest `phrasing` node.
 This allows you to apply styling rules on `phrasing` elements separately from `blocking` elements.
+> Expects a `DocumentFragment` as input, or retrieves the currently selected text when none provided.
 
 ## Selection to structured text
 > Using the `textify()` method on a `DocumentFragment`
@@ -18,10 +19,10 @@ let fragment = document.getSelection().getRangeAt(0);
 let textifier = new Textifier({ 
    
    skip: ["FIGCAPTION","FIGURE","NOSCRIPT"],
-   keep: ["A"], // keep no matter what
-   step: 8, // traversal from text > root nodes
-   hops: 2, // drop text when the parent node is skipped multiple times
-   same: 2, // drop text when the same textContent is contained multiple times
+   keep: ["A"], // keep these no matter what
+   step: 8, // traversal from text to root node
+   hops: 3, // drop text when the parent node is skipped more than
+   same: 2, // drop text when the same textContent is contained more than
 
 }).textify(fragment);
 
@@ -32,8 +33,10 @@ let result = [...textifier.fuse]
     ) //.join("").slice(0,32) + '...' 
 )
 
-console.log(result)
-
+console.log([
+  ["H2", "Etymology", "\n"],
+  ["P", "Quipu", " is a Quechua word meaning 'knot' or 'to knot'.", "[16]"],
+])
 ```
 
 ## Fragment to bracketed text 
