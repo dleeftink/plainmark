@@ -28,9 +28,9 @@ let textifier = new Textifier({
 
 let result = [...textifier.fuse]
   .map(([block,inline]) => [[block],...inline]
-    .map(([wraps,texts],i)=> i == 0 ? wraps.tagName : texts
+    .map(([wraps,lines],i)=> i == 0 ? wraps.tagName : lines
       .map(({text,path})=>text.textContent).join("")
-    ) //.join("").slice(0,32) + '...' 
+    ) //.join("").slice(0,16) + '...' 
 )
 
 console.log([
@@ -67,7 +67,7 @@ let textifier = new Textifier({
 // return TAG:{text}
 let result = [...textifier.fuse]
   .map(([block,inline]) => [[block],...inline]
-    .map(([wraps,texts],i)=> i == 0 ? wraps.tagName : (wraps.tagName ?? 'T') + ':{' + texts
+    .map(([wraps,lines],i)=> i == 0 ? wraps.tagName : (wraps.tagName ?? 'T') + ':{' + lines
       .map(({text,path})=> {
         let forms = path.filter(node=>node.kind.has('phrasing') && node.tagName !== 'SPAN' && node !== wraps)
         let formString = forms.map(node=>node.tagName).reverse().join(':')
