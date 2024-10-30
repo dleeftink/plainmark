@@ -1,7 +1,7 @@
 # plainmark
 A library of plain Markdown tools.
 
-## `new Textifier()`
+## `class Textifier()`
 Uses a `TreeWalker` to visit text nodes and merge newlines with preceding parent elements.
 For each textNode:
 
@@ -12,7 +12,7 @@ For each textNode:
    + Subgroups nodes by the highest `phrasing` element in their path as `subkey` *inside* their parent group
   
 This allows you to apply styling rules to nested `phrasing` elements (e.g. `<a>`,`<b>`,`<i>`) separately from the nearest `blocking` context (e.g. `<div>`,`<p>`), 
-for instance to create a simple HTML the Markdown converter.
+for instance to create a simple HTML to Markdown converter.
 
 > Expects a `DocumentFragment` as input or retrieves the current text selection when none provided
 
