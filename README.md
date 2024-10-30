@@ -4,7 +4,7 @@ A library of plain Markdown tools.
 ## `new Textifier()`
 
 ### Selection to structured text
-Using the `textify()` method on a `DocumentFragment`:
+> Using the `textify()` method on a `DocumentFragment`:
 
 ``` js
 
@@ -33,7 +33,7 @@ console.log(result)
 ```
 
 ### Fragment to wrapped text 
-Using the `textify()` method on a `TemplateFragment`:
+> Using the `textify()` method on a `TemplateFragment`:
 
 ```js
 let HTMLFrag = `
@@ -69,6 +69,9 @@ let result = [...textifier.fuse]
     )
 )
 
-console.log(result)
-
+console.log([
+  ["BODY", "BR:{\n}"],
+  ["H3", "T:{Some title}", "BR:{\n}"],
+  ["P", "T:{Content}", "A:{[1]}", "T:{that is }", "I:{B:{styled}", "BR:{\n}"],
+])
 ```
