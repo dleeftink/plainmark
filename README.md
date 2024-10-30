@@ -2,18 +2,19 @@
 A library of plain Markdown tools.
 
 ## `new Textifier()`
+> Expects a `DocumentFragment` as input or retrieves the current text selection when none provided
 
 Uses a `TreeWalker` to visit text nodes and merge newlines to preceding parent elements.
-For each textNode
+
+For each textNode:
 
 1. Determines whether a tag is `phrasing` or `blocking`
 2. Adds the `textNode` to a nested `Map()` that:
    + Groups the node to the nearest `blocking` parent element entry
    + Subgroups the node by the highest `phrasing` element *inside* the parent group entry
   
-This allows you to apply styling rules to `phrasing` elements (e.g. `<a>`,`<b>`,`<i>`) separately from `blocking` elements (e.g. `<div>`,`<p>`,`<blockquote>`).
-
-> Expects a `DocumentFragment` as input or retrieves the current text selection when none provided
+This allows you to apply styling rules to `phrasing` elements (e.g. `<a>`,`<b>`,`<i>`) separately from `blocking` elements (e.g. `<div>`,`<p>`,`<blockquote>`), 
+for instance to create a simple HTML the Markdown converter.
 
 ## Selection to structured text
 > Using `textify()` on a `DocumentFragment`
