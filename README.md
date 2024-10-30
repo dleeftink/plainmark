@@ -56,7 +56,6 @@ let template = document.createElement('template');
 
 let textifier = new Textifier({ 
    
-   skip: ["FIGCAPTION","FIGURE","NOSCRIPT","SUP"],
    keep: ["A","SECTION"], // keep no matter what
    step: 8, // traversal from text > root nodes
    hops: 2, // drop text when the parent node is skipped multiple times
@@ -69,12 +68,21 @@ let result = [...textifier.fuse]
   .map(([block,inline]) => [[block],...inline]
     .map(([wraps,lines],i)=> i == 0 ? wraps.tagName : (wraps.tagName ?? 'T') + ':{' + lines
       .map(({text,path})=> {
-        let forms = path.filter(node=>node.kind.has('phrasing') && node.tagName !== 'SPAN' && node !== wraps)
+        
+        let forms = path
+          .filter(node=>node.kind.has('phrasing'))
+          .filter(node=> node.tagName !== 'SPAN' && node !== wraps);
+
         let formString = forms.map(node=>node.tagName).reverse().join(':')
         return (forms.length ? formString+':{' : '') + text.textContent
+      
       }).join('') + '}'
     )
 )
+
+// Text contents <T> are grouped by closest blocking parent node:
+// <H3> inside of <HGROUP> = H3
+// <P> inside of <SECTION> = P
 
 console.log([
   ["BODY", "BR:{\n}"],
