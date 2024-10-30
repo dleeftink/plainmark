@@ -7,7 +7,7 @@ Uses a `TreeWalker` to visit text nodes and merge newlines to preceding parent e
 For each textNode, determines whether a tag is `phrasing` or `blocking` and builds a nested map that groups textNodes by the closest `blocking` node, and subgroups them by the farthest `phrasing` node.
 This allows you to apply styling rules on `phrasing` elements separately from `blocking` elements.
 
-### Selection to structured text
+## Selection to structured text
 > Using the `textify()` method on a `DocumentFragment`
 
 ``` js
@@ -36,7 +36,7 @@ console.log(result)
 
 ```
 
-### Fragment to bracketed text 
+## Fragment to bracketed text 
 > Using the `textify()` method on a `TemplateFragment`
 
 ```js
