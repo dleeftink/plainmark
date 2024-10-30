@@ -11,7 +11,7 @@ For each textNode
    + Groups the node to the nearest `blocking` parent element entry
    + Subgroups the node by the highest `phrasing` element *inside* the parent group entry
   
-This allows you to apply styling rules to `phrasing` elements (e.g. `<a>,<b>,<i>`) separately from `blocking` elements (e.g. `<div>,<p>,<blockquote>`).
+This allows you to apply styling rules to `phrasing` elements (e.g. `<a>`,`<b>`,`<i>`) separately from `blocking` elements (e.g. `<div>`,`<p>`,`<blockquote>`).
 
 > Expects a `DocumentFragment` as input or retrieves the current text selection when none provided
 
