@@ -2,7 +2,7 @@
 A library of plain Markdown tools.
 
 ## `new Textifier()`
-Uses a `TreeWalker` to visit text nodes and merge newlines to preceding parent elements.
+Uses a `TreeWalker` to visit text nodes and merge newlines with preceding parent elements.
 For each textNode:
 
 1. Determines whether a tag is `phrasing` or `blocking`
