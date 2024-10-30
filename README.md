@@ -7,11 +7,12 @@ Uses a `TreeWalker` to visit text nodes and merge newlines to preceding parent e
 For each textNode
 
 1. Determines whether a tag is `phrasing` or `blocking`
-2. Adds the node to a nested `Map()` that:
-   + Groups textNodes by the nearest `blocking` parent node
-   + Subgroups textNodes by the highest `phrasing` node inside the parent group
+2. Adds the `textNode` to a nested `Map()` that:
+   + Groups the node to the nearest `blocking` parent element entry
+   + Subgroups the node by the highest `phrasing` element *inside* the parent group entry
   
 This allows you to apply styling rules to `phrasing` elements (e.g. `<a>,<b>,<i>`) separately from `blocking` elements (e.g. `<div>,<p>,<blockquote>`).
+
 > Expects a `DocumentFragment` as input or retrieves the current text selection when none provided
 
 ## Selection to structured text
