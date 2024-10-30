@@ -2,7 +2,8 @@ export function group(flat) {
    
   let perf = performance.now();
   let fuse = this.fuse ?? new Map();
-  let last; fuse.clear();
+      flat = flat ?? this.flat;
+      fuse.clear();
 
   let text, path, data,list,node;
   const size = flat.length;

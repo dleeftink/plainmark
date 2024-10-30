@@ -1,7 +1,8 @@
 export default class Textifier {
   constructor({
     drop = ["embedded", "metadata", "interactive", "sectioning"],
-    keep = ["A", "ARTICLE", "SECTION"], skip = ["SUP"],
+    keep = ["A", "ARTICLE", "SECTION"],
+    skip = ["SUP"],
     pick = ["href"],
     step = 8,
     hops = 2,
@@ -125,7 +126,7 @@ export default class Textifier {
     let dist = this.opts.hops ?? 2;
     let same = this.opts.same ?? 2;
 
-    let prev, text, past;
+    let prev, text, temp, past;
     let walk = document.createTreeWalker(
       host,
       NodeFilter.SHOW_TEXT,
@@ -135,9 +136,14 @@ export default class Textifier {
       let stem = text.parentNode;
 
       if (
-        /^\n+$/.test(text.textContent.replaceAll(" ", ""))
-      )
+        ((temp = text.textContent.replaceAll(" ", "")),
+        temp.indexOf("\n") == 0 &&
+          temp.replaceAll("\n", "").replaceAll("\t", "")
+            .length == 0)
+      ) {
         text = document.createElement("br");
+        text.textContent = "\n";
+      }
       if (text.tagName === "BR" && past?.tagName === "BR")
         continue;
       let atts = [...(stem?.attributes || [])];
@@ -185,8 +191,8 @@ export default class Textifier {
         safe++;
 
         if (node.skip) {
-          node = node?.parentNode;
           hops++;
+          node = node?.parentNode;
           continue;
         } else {
           node.kind = kind(node.tagName);
@@ -270,7 +276,7 @@ export default class Textifier {
 
     let perf = performance.now();
     let fuse = this.fuse ?? new Map();
-    let last;
+    flat = flat ?? this.flat;
     fuse.clear();
 
     let text, path, data, list, node;

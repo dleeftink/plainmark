@@ -27,9 +27,7 @@ export default class Textifier {
     this.base = new Object();
     this.flat = new Array();
     this.fuse = new Map();
-    
     this.reindex(); // populates base
-    
   }
 
   textify(fragment) {
