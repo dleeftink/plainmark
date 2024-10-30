@@ -1,7 +1,8 @@
 export default class Textifier {
   constructor({
     drop = ["embedded", "metadata", "interactive", "sectioning"],
-    keep = ["A", "ARTICLE", "SECTION"], skip = ["SUP"],
+    keep = ["A", "ARTICLE", "SECTION"],
+    skip = ["SUP"],
     pick = ["href"],
     step = 8,
     hops = 2,
@@ -135,9 +136,13 @@ export default class Textifier {
       let stem = text.parentNode;
 
       if (
-        /^\n+$/.test(text.textContent.replaceAll(" ", ""))
-      )
+        text.textContent
+          .replaceAll(" ", "")
+          .indexOf("\n") == 0
+      ) {
         text = document.createElement("br");
+        text.textContent = "\n";
+      }
       if (text.tagName === "BR" && past?.tagName === "BR")
         continue;
       let atts = [...(stem?.attributes || [])];
@@ -270,7 +275,7 @@ export default class Textifier {
 
     let perf = performance.now();
     let fuse = this.fuse ?? new Map();
-    let last;
+    flat = flat ?? this.flat;
     fuse.clear();
 
     let text, path, data, list, node;

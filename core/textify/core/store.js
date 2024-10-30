@@ -47,7 +47,10 @@ export function store(fragment) {
     let stem = text.parentNode;
 
     // how to pass parentNode?                             
-    if(/^\n+$/.test(text.textContent.replaceAll(' ',''))) text = document.createElement('br')
+    if(text.textContent.replaceAll(' ','').indexOf('\n') == 0) { 
+      text = document.createElement('br');
+      text.textContent = '\n'
+    }
     if(text.tagName === 'BR' && past?.tagName === 'BR') continue
     let atts = [...(stem?.attributes || [])];
 
