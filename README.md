@@ -67,10 +67,10 @@ let textifier = new Textifier({
 // return TAG:{text}
 let result = [...textifier.fuse]
   .map(([block,inline]) => [[block],...inline]
-    .map(([wrap,line],i)=> i == 0 ? wrap.tagName : (wrap.tagName ?? 'T') + ':{' + line
+    .map(([wraps,texts],i)=> i == 0 ? wraps.tagName : (wraps.tagName ?? 'T') + ':{' + texts
       .map(({text,path})=> {
-        let forms = path.filter(n=>n.kind.has('phrasing') && n.tagName !== 'SPAN' && n !== wrap)
-        let formString = forms.map(d=>d.tagName).reverse().join(':')
+        let forms = path.filter(node=>node.kind.has('phrasing') && node.tagName !== 'SPAN' && node !== wraps)
+        let formString = forms.map(node=>node.tagName).reverse().join(':')
         return (forms.length ? formString+':{' : '') + text.textContent
       }).join('') + '}'
     )
