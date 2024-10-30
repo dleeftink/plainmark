@@ -9,7 +9,7 @@ This allows you to apply styling rules on `phrasing` elements separately from `b
 > Expects a `DocumentFragment` as input, or retrieves the currently selected text when none provided.
 
 ## Selection to structured text
-Using `textify()` on a `DocumentFragment`:
+> Using `textify()` on a `DocumentFragment`
 
 ``` js
 
@@ -40,7 +40,7 @@ console.log([
 ```
 
 ## Fragment to bracketed text 
-Using `textify()` on a `TemplateFragment`:
+> Using `textify()` on a `TemplateFragment`
 
 ```js
 let HTMLFrag = `
