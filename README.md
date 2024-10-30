@@ -6,7 +6,7 @@ A library of plain Markdown tools.
 Uses a `TreeWalker` to visit text nodes and merge newlines to preceding parent elements.
 For each textNode, determines whether a tag is `phrasing` or `blocking` and builds a nested map that groups textNodes by the closest `blocking` node, and subgroups them by the farthest `phrasing` node.
 This allows you to apply styling rules on `phrasing` elements separately from `blocking` elements.
-> Expects a `DocumentFragment` as input, or retrieves the currently selected text when none provided.
+> Expects a `DocumentFragment` as input or retrieves the current text selection when none provided
 
 ## Selection to structured text
 > Using `textify()` on a `DocumentFragment`
