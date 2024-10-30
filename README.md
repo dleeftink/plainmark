@@ -4,7 +4,13 @@ A library of plain Markdown tools.
 ## `new Textifier()`
 
 Uses a `TreeWalker` to visit text nodes and merge newlines to preceding parent elements.
-For each textNode, determines whether a tag is `phrasing` or `blocking` and builds a nested map that groups textNodes by the nearest `blocking` parent node, and subgroups them by the highest `phrasing` node inside the parent group.
+For each textNode
+
+1. Determines whether a tag is `phrasing` or `blocking`
+2. Adds the node to a nested `Map()` that
+   1. Groups textNodes by the nearest `blocking` parent node
+   2. Subgroups textNodes by the highest `phrasing` node inside the parent group
+  
 This allows you to apply styling rules to `phrasing` elements (e.g. `<a>,<b>,<i>`) separately from `blocking` elements (e.g. `<div>,<p>,<blockquote>`).
 > Expects a `DocumentFragment` as input or retrieves the current text selection when none provided
 
