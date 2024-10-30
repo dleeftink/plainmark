@@ -13,7 +13,8 @@ For each textNode:
 This allows you to apply styling rules to `phrasing` elements (e.g. `<a>`,`<b>`,`<i>`) separately from `blocking` elements (e.g. `<div>`,`<p>`,`<blockquote>`), 
 for instance to create a simple HTML the Markdown converter.
 
-> **NOTE**:
+> **NOTE**
+> 
 > Expects a `DocumentFragment` as input or retrieves the current text selection when none provided
 
 ## Selection to structured text
