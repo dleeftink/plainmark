@@ -1,7 +1,7 @@
 import fs from 'node:fs'
-import assign from './assign.js'
-import methods from '../core/textify/proto.js'
-import Textifier from '../core/textify/index.js'
+import assign from './compile/assign.js'
+import methods from './textify/proto.js'
+import Textifier from './textify/index.js'
 //import * as params from '../core/params.js'
 import * as prettier from 'prettier'
 
@@ -21,6 +21,6 @@ let format = await prettier.format(source, { semi: true, printWidth: 60, parser:
     // strategy 2 (post):
     format = format.replace(/\s+("[^"]+?")\,\n/gm,'$1, ').replace(/\,\s+\]/g,']'); 
 
-await fs.writeFile('./dist/textify.js', format, () => { })
+await fs.writeFile('./pack/textify.js', format, () => { })
 
 //console.log(source)
