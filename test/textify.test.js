@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-// import Markifier from "../dist/markify.js";
-// import Textifier from "../dist/textify.js";
+// import Markifier from "../pack/markify.js";
+// import Textifier from "../pack/textify.js";
 
 import { openDoc } from "./util/read.js";
 import { expect, expectTypeOf, test } from "vitest";

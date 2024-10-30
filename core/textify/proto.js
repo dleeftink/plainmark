@@ -1,4 +1,4 @@
-import rewrite from "../../pack/rewrite.js";
+import rewrite from "../compile/rewrite.js";
 
 import { check as recheck } from "./util/check.js";
 import { kinds as reindex } from "./core/kinds.js";
