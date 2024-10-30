@@ -6,7 +6,7 @@ Uses a `TreeWalker` to visit text nodes and merge newlines with preceding parent
 For each textNode:
 
 1. Builds an ancestor path and determines whether any of its ancestor tags are `phrasing` or `blocking`
-2. Adds the `text` node and its `path` to a `Map()` of `Maps()`that:
+2. Adds the `text` node and its `path` to a nested `Map()` of `Maps()`that:
 
    + Groups nodes to the nearest `blocking` parent element in their path
    + Subgroups nodes by the highest `phrasing` element in their path *inside* their parent group
