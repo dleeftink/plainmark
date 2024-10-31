@@ -2,8 +2,7 @@
 A library of plain Markdown tools.
 
 ## `Textifier class`
-Uses a `TreeWalker` to visit text nodes and merge newlines with preceding parent elements.  
-For each `text` node:
+Uses a `TreeWalker` to visit text nodes and merge newlines with preceding parent elements. For each `text` node:
 
 > 1. Builds an ancestor path and determines whether any of its ancestor tags are `phrasing` or `blocking`
 > 2. Adds the `text` node and its `path` to a nested `Map()` of `Maps()` that:
