@@ -11,7 +11,7 @@ export function form(text,path,mode = 'form') {
     link: (text,node) => this.link(text, node.href),
     bold: (text,node) => this.lock(text, '**'),
     emph: (text,node) => this.lock(text, '*'),
-    head: (text,node) => this.lead(text,parseInt(node.tagName.match(/\d+/)[0] ?? 0),'#'),
+    head: (text,node) => this.lead(text,parseInt(node.tagName.split('H')[1] ?? 0),'#'),
     none: (text,node) => text
   }))
 
