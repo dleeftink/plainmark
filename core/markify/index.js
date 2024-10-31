@@ -44,4 +44,8 @@ export default class Markifier {
     
   }
 
+  rule() {
+    
+  }
+
 } 

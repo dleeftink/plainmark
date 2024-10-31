@@ -124,6 +124,7 @@ export function store(fragment) {
       } 
       
       // retrieve existing path
+      // todo: rework this code
       if (node.parentNode.path) {
         path = path.concat(node.parentNode.path);
         continue;

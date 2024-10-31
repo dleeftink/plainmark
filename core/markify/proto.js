@@ -5,6 +5,7 @@ import { dict } from "./rule/dict.js";
 import { link } from "./rule/link.js";
 import { lead } from "./rule/lead.js";
 import { lock } from "./rule/lock.js";
+import { rule } from "./rule/rule.js";
 
 const prototype = {
   rewrap,
@@ -12,7 +13,8 @@ const prototype = {
   link,
   lead,
   lock,
-  dict
+  dict,
+  rule
 }
 
 export default prototype

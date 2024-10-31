@@ -1,9 +1,12 @@
-export function form(text,path) {
+export function form(text,path,mode = 'form') {
 
   let list = [], node;
   let span = path.length;
-
-  let form = this.base.form ?? (this.base.form = new this.dict({
+  
+  let rule = this.rule; 
+  let Rule = this.rule.prototype; 
+  
+  let form = Rule[mode] ?? (Rule.mode = mode, Rule[mode] = new this.dict({
     code: (text,node) => this.lock(text, '`'),
     link: (text,node) => this.link(text, node.href),
     bold: (text,node) => this.lock(text, '**'),
@@ -15,20 +18,18 @@ export function form(text,path) {
   for(let i = 0; i < span; i++) {
     node = path[i];
     list.push(new rule(node))
-  } list.sort((a,b)=> a.rank - b.rank)
-
-  let prep,item, exit = text.textContent;
-   for(let i = 0; i < span; i++) {
-    item = list[i]
-    prep = item.pipe;
-    node = item.node;
-    exit = prep(exit,node) 
+  } list = list.sort((a,b)=> a.rank - b.rank)
+ 
+  let pass = text.textContent;
+  for(let i = 0; i < span; i++) {
+    let {node,pipe} = list[i]
+    if(pipe == undefined) { 
+      continue 
+    } else {
+      pass = pipe(pass,node) 
+    }
   }
   
-  return list
-
-  function rule(node) {
-    return Object.assign({node},form[node.tagName.split(/[1-6]/)[0]])
-  }
+  return pass
   
 }
