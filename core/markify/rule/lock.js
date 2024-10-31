@@ -1,3 +1,3 @@
-export function wrap(string, tag) {
+export function lock(string, tag) {
   return `${tag}${string}${tag}`
 }

@@ -8,8 +8,7 @@ export default class Markifier {
 
     Object.assign(this.constructor.prototype, prototype);
 
-    //this.form = null;
-    //this.wrap = null;
+    this.base = { form: null, wrap: null }
   
   }
 
@@ -41,7 +40,7 @@ export default class Markifier {
     
   }
 
-  wrap() {
+  lock() {
     
   }
 

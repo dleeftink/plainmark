@@ -3,11 +3,11 @@ export function form(text,path) {
   let list = [], node;
   let span = path.length;
 
-  let form = this.form ?? (this.form = new this.dict({
-    code: (text,node) => this.wrap(text, '`'),
+  let form = this.base.form ?? (this.base.form = new this.dict({
+    code: (text,node) => this.lock(text, '`'),
     link: (text,node) => this.link(text, node.href),
-    bold: (text,node) => this.wrap(text, '**'),
-    emph: (text,node) => this.wrap(text, '*'),
+    bold: (text,node) => this.lock(text, '**'),
+    emph: (text,node) => this.lock(text, '*'),
     head: (text,node) => this.lead(text,parseInt(node.tagName.match(/\d+/)[0] ?? 0),'#'),
     none: (text,node) => text
   }))

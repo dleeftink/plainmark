@@ -1,7 +1,6 @@
 export default class Markifier {
   constructor({} = {}) {
-    this.form = null;
-    this.wrap = null;
+    this.base = { form: null, wrap: null };
   }
 
   process(init) {
@@ -16,12 +15,12 @@ export default class Markifier {
     let span = path.length;
 
     let form =
-      this.form ??
-      (this.form = new this.dict({
-        code: (text, node) => this.wrap(text, "`"),
+      this.base.form ??
+      (this.base.form = new this.dict({
+        code: (text, node) => this.lock(text, "`"),
         link: (text, node) => this.link(text, node.href),
-        bold: (text, node) => this.wrap(text, "**"),
-        emph: (text, node) => this.wrap(text, "*"),
+        bold: (text, node) => this.lock(text, "**"),
+        emph: (text, node) => this.lock(text, "*"),
         head: (text, node) =>
           this.lead(
             text,
@@ -33,22 +32,25 @@ export default class Markifier {
       node = path[i];
       list.push(new rule(node));
     }
-    list.sort((a, b) => a[1] - b[1]);
+    list.sort((a, b) => a.rank - b.rank);
 
     let prep,
+      item,
       exit = text.textContent;
     for (let i = 0; i < span; i++) {
-      prep = list[i].pipe;
-      exit = ops(out, node);
+      item = list[i];
+      prep = item.pipe;
+      node = item.node;
+      exit = prep(exit, node);
     }
 
-    return exit;
+    return list;
 
     function rule(node) {
-      return {
-        node,
-        ...form[node.getTagname.split(/[1-6]/)[0]],
-      };
+      return Object.assign(
+        { node },
+        form[node.tagName.split(/[1-6]/)[0]],
+      );
     }
 
   }
@@ -85,8 +87,7 @@ export default class Markifier {
 
   }
 
-  dict(rules) {
-
+  dict(rules, deps) {
     Object.assign(this, { rule: { ...rules } });
 
     return {
@@ -109,13 +110,12 @@ export default class Markifier {
 
   }
 
-  lead(string, depth, symbol = "-", tabs) {
-    tabs = tabs ?? "  ";
+  lead(string, depth, tabs = "  ", symbol = "") {
     return `${tabs.repeat(depth)}${symbol ?? depth + "."} ${string}`;
 
   }
 
-  wrap(string, tag) {
+  lock(string, tag) {
     return `${tag}${string}${tag}`;
 
   }
