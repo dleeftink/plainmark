@@ -23,6 +23,7 @@ export default class Textifier {
     Object.assign(this.constructor.prototype, prototype);
     
     const opts = arguments[0];
+    this.time = { base:null, flat:null, fuse:0 }
     this.opts = { ...opts };
     this.base = new Object();
     this.flat = new Array();
@@ -39,7 +40,7 @@ export default class Textifier {
     let { dict:fuse,time:C } = this.regroup(flat);
 
     this.time = {
-      base:A,flat:B,fuse:C
+      base:parseInt(A),flat:parseInt(B),fuse:parseInt(C)
     }
 
     // return this may be more intuitive
