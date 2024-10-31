@@ -1,4 +1,5 @@
 export default class Textifier {
+  
   constructor({
     drop = ["embedded", "metadata", "interactive", "sectioning"],
     keep = ["A", "ARTICLE", "SECTION"],
