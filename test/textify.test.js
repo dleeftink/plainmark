@@ -25,6 +25,8 @@ let fragment = document.createDocumentFragment();
 let textifier = new Textifier();
 let markifier = new Markifier();
 
+let processIO = 0;
+
 expect.extend({
   toBeOneOf: (received, expected) => {
     console.log(`${received} not in ${expected}`)
@@ -90,17 +92,28 @@ test("I/O", () => {
 
   // test root traversal depth
 
-  textifier.opts.step = 1;
+  textifier.opts.step = 3;
   exit = textifier.textify(fragment);  
-  expect(exit.flat[0].path.length == 1);
+  expect(exit.flat[0].path.length == 3);
+
+  textifier.opts.step = 2;
+  exit = textifier.textify(fragment);
+  expect(exit.flat[0].path.length == 2);
+
+  // in practice HTML + BODY adds two nesting levels
+  textifier.opts.step = 1;
+  exit = textifier.textify(fragment);
+  expect(exit.flat.length == 0);
 
   textifier.opts.step = 0;
   exit = textifier.textify(fragment);
-  expect(exit.flat[0].path.length == 0);
+  expect(exit.flat.length == 0);
 
-    console.log(
+  processIO = Object.values(exit.time).reduce((a,b)=>a+b,0);
+
+    /*console.log(
       "Completed in:", Object.values(exit.time).reduce((a,b)=>a+b,0)
-    )
+    )*/
 
   }
 );
@@ -208,5 +221,11 @@ test("Filter nodes", () => {
         text.textContent.slice(0,32) + '...'
       ]).slice(0,8),
     )
+
+    // print processIO in last test
+    console.log(
+      "Single pass completed in:", processIO
+    )
   }
+  
 )

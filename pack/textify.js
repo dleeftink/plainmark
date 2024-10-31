@@ -126,10 +126,22 @@ export default class Textifier {
     let dist = this.opts.hops ?? 2;
     let same = this.opts.same ?? 2;
 
+    let step = Math.max(0, this.opts.step ?? 8);
+    let filt = (node, rank = 0, tier = step + 1) => {
+      while (rank < tier && node.parentNode) {
+        node = node.parentNode;
+        rank++;
+      }
+      return rank < tier
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_REJECT;
+    };
+
     let prev, text, temp, past;
     let walk = document.createTreeWalker(
       host,
       NodeFilter.SHOW_TEXT,
+      filt,
     );
 
     while ((text = walk.nextNode())) {
@@ -183,7 +195,6 @@ export default class Textifier {
         delete node.skip;
       }
 
-      let step = Math.max(0, this.opts.step ?? 8);
       let last = node;
       safe = 0;
 
