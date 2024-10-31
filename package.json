@@ -7,6 +7,6 @@
   },
   "scripts": {
     "test": "vitest",
-    "build" : "node core/build.js textify"
+    "build" : "node core/build.js textify && node core/build.js markify"
   }
 }

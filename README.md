@@ -1,11 +1,19 @@
 # plainmark
 A library of plain Markdown tools.
 
-## `new Textifier()`
+## `Textifier class`
+Uses a `TreeWalker` to visit text nodes and merge newlines with preceding parent elements.  
+For each `text` node:
 
-Uses a `TreeWalker` to visit text nodes and merge newlines to preceding parent elements.
-For each textNode, determines whether a tag is `phrasing` or `blocking` and builds a nested map that groups textNodes by the closest `blocking` node, and subgroups them by the farthest `phrasing` node.
-This allows you to apply styling rules on `phrasing` elements separately from `blocking` elements.
+1. Builds an ancestor path and determines whether any of its ancestor tags are `phrasing` or `blocking`
+2. Adds the `text` node and its `path` to a nested `Map()` of `Maps()` that:
+ 
+   + Groups nodes by their **nearest** `blocking` parent element in their path
+   + Subgroups nodes by their **highest** `phrasing` element in their path *inside* each parent group
+  
+This allows you to apply styling rules to nested `phrasing` elements (e.g. `<a>`,`<b>`,`<i>`) separately from the nearest `blocking` context (e.g. `<div>`,`<p>`), 
+for instance to create a simple HTML to Markdown converter.
+
 > Expects a `DocumentFragment` as input or retrieves the current text selection when none provided
 
 ## Selection to structured text

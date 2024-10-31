@@ -21,10 +21,7 @@ export function store(fragment) {
 
       host.appendChild(body);
       root.appendChild(main);  
-
-  // v unnecessary for now
-  // let dict = new Map();
-  
+      
   let list = this.flat ?? new Array();
       list.length = 0;
   let pick = this.opts.pick ?? ["href"];
@@ -38,8 +35,20 @@ export function store(fragment) {
   let dist = this.opts.hops ?? 2;
   let same = this.opts.same ?? 2;
   
+  // max steps && node filter
+  let step = Math.max(0,this.opts.step ?? 8);
+  let filt = (node,rank = 0,tier = step + 1) => {
+    while(rank < tier && node.parentNode) {
+      node = node.parentNode
+      rank++
+    }
+    return rank < tier 
+      ? NodeFilter.FILTER_ACCEPT 
+      : NodeFilter.FILTER_REJECT
+  }
+
   let prev, text, temp, past;
-  let walk = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+  let walk = document.createTreeWalker(host, NodeFilter.SHOW_TEXT,filt);
   
   // process fragment textnodes
     
@@ -90,8 +99,7 @@ export function store(fragment) {
       delete node.skip;
     }
 
-    //dict.set(text, path); 
-    let step = Math.max(0,this.opts.step ?? 8);
+    // safety to not thread the fragment beyond max steps
     let last = node; safe = 0;
  
     // find path or merge with existing
@@ -116,6 +124,7 @@ export function store(fragment) {
       } 
       
       // retrieve existing path
+      // todo: rework this code
       if (node.parentNode.path) {
         path = path.concat(node.parentNode.path);
         continue;
