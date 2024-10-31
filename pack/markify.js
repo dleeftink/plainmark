@@ -9,14 +9,18 @@ export default class Markifier {
 
   }
 
-  reform(text, path) {
+  reform(text, path, mode = "form") {
     let list = [],
       node;
     let span = path.length;
 
+    let rule = this.rule;
+    let Rule = this.rule.prototype;
+
     let form =
-      this.base.form ??
-      (this.base.form = new this.dict({
+      Rule[mode] ??
+      ((Rule.mode = mode),
+      (Rule[mode] = new this.dict({
         code: (text, node) => this.lock(text, "`"),
         link: (text, node) => this.link(text, node.href),
         bold: (text, node) => this.lock(text, "**"),
@@ -26,71 +30,84 @@ export default class Markifier {
             text,
             parseInt(node.tagName.match(/\d+/)[0] ?? 0),"#",           ),
         none: (text, node) => text,
-      }));
+      })));
 
     for (let i = 0; i < span; i++) {
       node = path[i];
       list.push(new rule(node));
     }
-    list.sort((a, b) => a.rank - b.rank);
+    list = list.sort((a, b) => a.rank - b.rank);
 
-    let prep,
-      item,
-      exit = text.textContent;
+    let pass = text.textContent;
     for (let i = 0; i < span; i++) {
-      item = list[i];
-      prep = item.pipe;
-      node = item.node;
-      exit = prep(exit, node);
+      let { node, pipe } = list[i];
+      if (pipe == undefined) {
+        continue;
+      } else {
+        pass = pipe(pass, node);
+      }
     }
 
-    return list;
-
-    function rule(node) {
-      return Object.assign(
-        { node },
-        form[node.tagName.split(/[1-6]/)[0]],
-      );
-    }
+    return pass;
 
   }
 
-  rewrap(pipe) {
+  rewrap(text, path, mode = "wrap") {
+    let list = [],
+      node;
+    let span = path.length;
 
-    let cnt = 1;
-    return pipe.map((row) =>
-      row.map(({ exit, ...d }, i, f) => {
-        let out = exit;
-        switch (true) {
-          case i == 0 &&
-            f.every((d) => d.ctx.tagName == "OL"):
-            out = d.ctx.innerHTML;
-            break;
+    let rule = this.rule;
+    let Rule = this.rule.prototype;
 
-          case i == 0 &&
-            f.every((d) => d.ctx.tagName == "UL"):
-            out = d.ctx.innerHTML;
-            break;
+    let nest = (text, node, path) => {
+      let filt = path.filter(
+        (d) => d.tagName == "UL" || d.tagName =="OL",       );
+      let self = filt[0];
+      console.log(self);
+      let sign =
+        self.tagName == "UL"
+          ? "-"
+          : (self.count
+              ? (self.count += 1)
+              : ((self.count = 1), self.count)) + ".";
 
-          case /h1-6/.test(d.type):
-            out = this.lead(
-              out,
-              parseInt(d.type.match(/\d+/)[0] ?? 0),"#",             );
-            break;
+      return this.lead(text, filt.length - 1, "    ", sign);
+    };
 
-          default:
-            out = out;
-        }
-        return { ...d, exit: out };
-      }),
-    );
+    let wrap =
+      Rule[mode] ??
+      ((Rule.mode = mode),
+      (Rule[mode] = new this.dict({
+        para: (text, node, path) => text,
+        list: (text, node, path) => nest(text, node, path),
+        cite: (text, node, path) => text,
+      })));
+
+    for (let i = 0; i < span; i++) {
+      node = path[i];
+      list.push(new rule(node, path));
+    }
+
+    let pass = text;
+    for (let i = 0; i < span; i++) {
+      let { node, pipe, path } = list[i];
+      if (pipe == undefined) {
+        continue;
+      } else {
+        pass = pipe(pass, node, path);
+      }
+    }
+
+    return pass;
 
   }
 
-  dict(rules, deps) {
+  dict(rules) {
+
     Object.assign(this, { rule: { ...rules } });
 
-    return {
+    let tags = {
       B: { pipe: this.rule.bold, rank: 2 },
       I: { pipe: this.rule.emph, rank: 1 },
       A: { pipe: this.rule.link, rank: 3 },
@@ -98,7 +115,20 @@ export default class Markifier {
 
       CODE: { pipe: this.rule.code, rank: 1 },
       NONE: { pipe: this.rule.none, rank: 5 },
+
+      P: { pipe: this.rule.para, rank: 6 },
+
+      OL: { pipe: this.rule.list, rank: 6 },
+      UL: { pipe: this.rule.list, rank: 6 },
+      DIV: { pipe: this.rule.para, rank: 6 },
+      BLOCKQUOTE: { pipe: this.rule.cite, rank: 6 },
     };
+
+    for (let tag in tags) {
+      if (tags[tag].pipe == undefined) delete tags[tag];
+    }
+
+    return tags;
 
   }
 
@@ -117,6 +147,14 @@ export default class Markifier {
 
   lock(string, tag) {
     return `${tag}${string}${tag}`;
+
+  }
+
+  rule(node, path = []) {
+    return Object.assign(
+      { node, path },
+      this[this.mode][node.tagName.split(/[1-6]/)[0]],
+    );
 
   }
 }
