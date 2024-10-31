@@ -7,6 +7,7 @@ For each `text` node:
 
 > 1. Builds an ancestor path and determines whether any of its ancestor tags are `phrasing` or `blocking`
 > 2. Adds the `text` node and its `path` to a nested `Map()` of `Maps()` that:
+> 
 >    + Groups nodes by their nearest `blocking` parent element in their path
 >    + Subgroups nodes by their highest `phrasing` element in their path *inside* their parent group
   
