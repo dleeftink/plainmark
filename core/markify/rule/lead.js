@@ -1,4 +1,3 @@
-export function lead(string,depth,symbol = '-',tabs) {
-  tabs = tabs ?? '  ';
+export function lead(string,depth,tabs = '  ',symbol = '') {
   return `${tabs.repeat(depth)}${symbol ?? (depth + '.')} ${string}`
 }

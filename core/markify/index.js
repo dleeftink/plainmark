@@ -7,24 +7,30 @@ export default class Markifier {
   } = {}) {
 
     Object.assign(this.constructor.prototype, prototype);
-    this.data
+
+    //this.form = null;
+    //this.wrap = null;
   
   }
 
   process(init) {
 
-    let pipe = this.parseTags(init);
-        pipe = this.parseLine(pipe);
+    //let pipe = this.parseTags(init);
+    //    pipe = this.parseLine(pipe);
 
     return pipe
   }
 
-  parseTags() {
+  reform() {
 
   }
 
-  parseLine() {
+  rewrap() {
 
+  }
+
+  dict() {
+    
   }
 
   link() {

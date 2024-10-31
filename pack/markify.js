@@ -1,41 +1,59 @@
 export default class Markifier {
   constructor({} = {}) {
-    this.data;
-
+    this.form = null;
+    this.wrap = null;
   }
 
   process(init) {
-
-    let pipe = this.parseTags(init);
-    pipe = this.parseLine(pipe);
 
     return pipe;
 
   }
 
-  parseTags(init) {
+  reform(text, path) {
+    let list = [],
+      node;
+    let span = path.length;
 
-    return init.map((row) =>
-      row
-        .map(({ type, ...d }) => ({
-          type: type.toLowerCase(),
-          ...d,
-        }))
-        .map((d) => {
-          let out = d.text;
+    let form =
+      this.form ??
+      (this.form = new this.dict({
+        code: (text, node) => this.wrap(text, "`"),
+        link: (text, node) => this.link(text, node.href),
+        bold: (text, node) => this.wrap(text, "**"),
+        emph: (text, node) => this.wrap(text, "*"),
+        head: (text, node) =>
+          this.lead(
+            text,
+            parseInt(node.tagName.match(/\d+/)[0] ?? 0),"#",           ),
+        none: (text, node) => text,
+      }));
 
-          if (d.type == "code") out = this.wrap(text, "`");
-          if (d.type == "a")
-            out = this.link(out, d.node.href);
-          if (d.type == "b") out = this.wrap(out, "**");
-          if (d.type == "i") out = this.wrap(out, "*");
-          return { ...d, exit: out };
-        }),
-    );
+    for (let i = 0; i < span; i++) {
+      node = path[i];
+      list.push(new rule(node));
+    }
+    list.sort((a, b) => a[1] - b[1]);
+
+    let prep,
+      exit = text.textContent;
+    for (let i = 0; i < span; i++) {
+      prep = list[i].pipe;
+      exit = ops(out, node);
+    }
+
+    return exit;
+
+    function rule(node) {
+      return {
+        node,
+        ...form[node.getTagname.split(/[1-6]/)[0]],
+      };
+    }
 
   }
 
-  parseLine(pipe) {
+  rewrap(pipe) {
 
     let cnt = 1;
     return pipe.map((row) =>
@@ -55,9 +73,7 @@ export default class Markifier {
           case /h1-6/.test(d.type):
             out = this.lead(
               out,
-              parseInt(d.type.match(/\d+/)[0] ?? 0),
-              "#",
-            );
+              parseInt(d.type.match(/\d+/)[0] ?? 0),"#",             );
             break;
 
           default:
@@ -66,6 +82,22 @@ export default class Markifier {
         return { ...d, exit: out };
       }),
     );
+
+  }
+
+  dict(rules) {
+
+    Object.assign(this, { rule: { ...rules } });
+
+    return {
+      B: { pipe: this.rule.bold, rank: 2 },
+      I: { pipe: this.rule.emph, rank: 1 },
+      A: { pipe: this.rule.link, rank: 3 },
+      H: { pipe: this.rule.head, rank: 4 },
+
+      CODE: { pipe: this.rule.code, rank: 1 },
+      NONE: { pipe: this.rule.none, rank: 5 },
+    };
 
   }
 

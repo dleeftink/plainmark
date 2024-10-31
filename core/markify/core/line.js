@@ -1,4 +1,4 @@
-export function parseLine(pipe) {
+export function wrap(pipe) {
   let cnt = 1;
   return pipe.map((row) =>
     row.map(({ exit, ...d }, i, f) => {

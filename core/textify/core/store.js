@@ -21,10 +21,7 @@ export function store(fragment) {
 
       host.appendChild(body);
       root.appendChild(main);  
-
-  // v unnecessary for now
-  // let dict = new Map();
-  
+      
   let list = this.flat ?? new Array();
       list.length = 0;
   let pick = this.opts.pick ?? ["href"];
