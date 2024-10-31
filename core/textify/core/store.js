@@ -102,6 +102,7 @@ export function store(fragment) {
       delete node.skip;
     }
 
+    // safety to not thread the fragment beyond max steps
     let last = node; safe = 0;
  
     // find path or merge with existing
