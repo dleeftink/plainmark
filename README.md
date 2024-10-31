@@ -3,13 +3,13 @@ A library of plain Markdown tools.
 
 ## `Textifier class`
 Uses a `TreeWalker` to visit text nodes and merge newlines with preceding parent elements.  
-For each `text` node:
-
-1. Builds an ancestor path and determines whether any of its ancestor tags are `phrasing` or `blocking`
-2. Adds the `text` node and its `path` to a nested `Map()` of `Maps()` that:
-
-   + Groups nodes by their nearest `blocking` parent element in their path
-   + Subgroups nodes by their highest `phrasing` element in their path *inside* their parent group
+> For each `text` node:
+> 
+> 1. Builds an ancestor path and determines whether any of its ancestor tags are `phrasing` or `blocking`
+> 2. Adds the `text` node and its `path` to a nested `Map()` of `Maps()` that:
+> 
+>  + Groups nodes by their nearest `blocking` parent element in their path
+>  + Subgroups nodes by their highest `phrasing` element in their path *inside* their parent group
   
 This allows you to apply styling rules to nested `phrasing` elements (e.g. `<a>`,`<b>`,`<i>`) separately from the nearest `blocking` context (e.g. `<div>`,`<p>`), 
 for instance to create a simple HTML to Markdown converter.
