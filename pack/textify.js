@@ -1,5 +1,4 @@
 export default class Textifier {
-  
   constructor({
     drop = ["embedded", "metadata", "interactive", "sectioning"],
     keep = ["A", "ARTICLE", "SECTION"],
@@ -25,16 +24,13 @@ export default class Textifier {
     let { list: flat, time: B } = this.restore(frag);
     let { dict: fuse, time: C } = this.regroup(flat);
 
-    return {
-      base,
-      flat,
-      fuse,
-      time: {
-        base: A,
-        flat: B,
-        fuse: C,
-      },
+    this.time = {
+      base: A,
+      flat: B,
+      fuse: C,
     };
+
+    return this;
 
   }
 

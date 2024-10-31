@@ -38,13 +38,12 @@ export default class Textifier {
     let { list:flat,time:B } = this.restore(frag);
     let { dict:fuse,time:C } = this.regroup(flat);
 
-    // return this may be more intuitive
-    return {
-      base,flat,fuse,
-      time:{
-        base:A,flat:B,fuse:C
-      }
+    this.time = {
+      base:A,flat:B,fuse:C
     }
+
+    // return this may be more intuitive
+    return this
 
   }
 
