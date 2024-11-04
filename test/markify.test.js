@@ -1,5 +1,6 @@
 import { expect, expectTypeOf, test } from "vitest";
 
+//import Markifier from "../pack/markify.js";
 import { default as Markifier } from '../core/markify/index.js'
 
 let markifier = new Markifier()
@@ -8,8 +9,9 @@ test("I/O", () => {
   let link = document.createElement('a');
   link.setAttribute('href','https://localhost')
 
+  let perfA = performance.now()
   let exitForm = markifier.reform(
-    document.createTextNode('hello'),
+    document.createTextNode('[hello]'),
     [document.createElement('i'),document.createElement('b'),/*document.createElement('h4'),*/link]
   )
 
@@ -22,10 +24,18 @@ test("I/O", () => {
   let exitWrap2 = markifier.rewrap(
     exitForm, [document.createElement('li'),document.createElement('ol')],2
   )
+
+  let nextForm = markifier.reform(
+    document.createTextNode('[next]'),
+    [document.createElement('i'),document.createElement('b'),/*document.createElement('h4'),*/link]
+  )
   
   console.log(
     // exitForm,
-    exitWrap+'\n'+exitWrap2 
+    'Completed in ', parseInt(performance.now()-perfA)+ '\n\n'+
+    exitWrap+'\n'+exitWrap2+'\n'+
+    nextForm,
+
   )
     
     

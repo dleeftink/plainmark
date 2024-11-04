@@ -216,11 +216,6 @@ export default class Textifier {
           }
         }
 
-        if (node.parentNode.path) {
-          path = path.concat(node.parentNode.path);
-          continue;
-        }
-
         if (!text.wrap) {
           if (
             last &&

@@ -7,8 +7,11 @@ export default class Markifier {
   } = {}) {
 
     Object.assign(this.constructor.prototype, prototype);
+    this.snip(['dict','rule']);
 
-    this.base = { form: null, wrap: null }
+    this.reform();
+    this.rewrap();
+    // this.base = { form: null, wrap: null }
   
   }
 
@@ -28,10 +31,6 @@ export default class Markifier {
 
   }
 
-  dict() {
-    
-  }
-
   link() {
     
   }
@@ -44,8 +43,16 @@ export default class Markifier {
     
   }
 
+  dict() {
+    
+  }
+
   rule() {
     
+  }
+
+  snip() {
+
   }
 
 } 

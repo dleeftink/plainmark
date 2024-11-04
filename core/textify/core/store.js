@@ -125,10 +125,10 @@ export function store(fragment) {
       
       // retrieve existing path
       // todo: rework this code
-      if (node.parentNode.path) {
+      /*if (node.parentNode.path) {
         path = path.concat(node.parentNode.path);
         continue;
-      }
+      }*/
 
       // find nearest non-phrasing element ('wrapper') in path
       if(!text.wrap) {

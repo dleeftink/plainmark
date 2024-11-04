@@ -1,6 +1,9 @@
 export default class Markifier {
   constructor({} = {}) {
-    this.base = { form: null, wrap: null };
+    this.snip(["dict", "rule"]);
+
+    this.reform();
+    this.rewrap();
   }
 
   process(init) {
@@ -9,7 +12,7 @@ export default class Markifier {
 
   }
 
-  reform(text, path, mode = "form") {
+  reform(text = "", path = [], book = "form") {
     let list = [],
       node;
     let span = path.length;
@@ -17,20 +20,17 @@ export default class Markifier {
     let rule = this.rule;
     let Rule = this.rule.prototype;
 
+    Rule.book = book;
+
     let form =
-      Rule[mode] ??
-      ((Rule.mode = mode),
-      (Rule[mode] = new this.dict({
+      Rule[book] ??
+      (Rule[book] = new this.dict({
         code: (text, node) => this.lock(text, "`"),
         link: (text, node) => this.link(text, node.href),
         bold: (text, node) => this.lock(text, "**"),
         emph: (text, node) => this.lock(text, "*"),
-        head: (text, node) =>
-          this.lead(
-            text,
-            parseInt(node.tagName.match(/\d+/)[0] ?? 0),"#",           ),
         none: (text, node) => text,
-      })));
+      }));
 
     for (let i = 0; i < span; i++) {
       node = path[i];
@@ -38,7 +38,7 @@ export default class Markifier {
     }
     list = list.sort((a, b) => a.rank - b.rank);
 
-    let pass = text.textContent;
+    let pass = text?.textContent ?? text;
     for (let i = 0; i < span; i++) {
       let { node, pipe } = list[i];
       if (pipe == undefined) {
@@ -52,19 +52,32 @@ export default class Markifier {
 
   }
 
-  rewrap(text, path, mode = "wrap") {
+  rewrap(text = "", path = [], book = "wrap") {
     let list = [],
       node;
     let span = path.length;
 
     let rule = this.rule;
     let Rule = this.rule.prototype;
+    Rule.book = book;
+
+    let wrap =
+      Rule[book] ??
+      (Rule[book] = new this.dict({
+        para: (text, node, path) => text,
+        list: (text, node, path) => nest(text, node, path),
+        head: (text, node) =>
+          this.lead(
+            text,
+            parseInt(node.tagName.split("H")[1] ?? 0),"#",           ),
+        cite: (text, node, path) => text,
+      }));
 
     let nest = (text, node, path) => {
       let filt = path.filter(
         (d) => d.tagName == "UL" || d.tagName =="OL",       );
       let self = filt[0];
-      console.log(self);
+
       let sign =
         self.tagName == "UL"
           ? "-"
@@ -74,15 +87,6 @@ export default class Markifier {
 
       return this.lead(text, filt.length - 1, "    ", sign);
     };
-
-    let wrap =
-      Rule[mode] ??
-      ((Rule.mode = mode),
-      (Rule[mode] = new this.dict({
-        para: (text, node, path) => text,
-        list: (text, node, path) => nest(text, node, path),
-        cite: (text, node, path) => text,
-      })));
 
     for (let i = 0; i < span; i++) {
       node = path[i];
@@ -100,6 +104,21 @@ export default class Markifier {
     }
 
     return pass;
+
+  }
+
+  link(string, href) {
+    return `[${string}](${href})`;
+
+  }
+
+  lead(string, depth, tabs = "  ", symbol = "") {
+    return `${tabs.repeat(depth)}${symbol ?? depth + "."} ${string}`;
+
+  }
+
+  lock(string, tag) {
+    return `${tag}${string}${tag}`;
 
   }
 
@@ -132,28 +151,32 @@ export default class Markifier {
 
   }
 
-  link(string, href) {
-    let left = string.match(/^([\[\{\(]+)/)?.[0] ?? "";
-    let right = string.match(/([\]\}\)]+$)/)?.[0] ?? "";
-
-    return `${left}[${string.replace(/[\(\)\[\]\{\}]/g, "")}](${href})${right}`;
-
-  }
-
-  lead(string, depth, tabs = "  ", symbol = "") {
-    return `${tabs.repeat(depth)}${symbol ?? depth + "."} ${string}`;
-
-  }
-
-  lock(string, tag) {
-    return `${tag}${string}${tag}`;
-
-  }
-
   rule(node, path = []) {
     return Object.assign(
       { node, path },
-      this[this.mode][node.tagName.split(/[1-6]/)[0]],
+      this[this.book][node.tagName.split(/[1-6]/)[0]],
+    );
+
+  }
+
+  snip(array) {
+
+    return Object.defineProperties(
+      this,
+      Object.fromEntries(
+        array.map((name) => [
+          name,
+          {
+            enumerable: false,
+            writeable: false,
+            value: new Function(
+              "return function " +
+                this[name]
+                  .toString()
+                  .replace(/^function\s/, ""),
+            ).call(),
+          }]),
+      ),
     );
 
   }

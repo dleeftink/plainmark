@@ -1,15 +1,24 @@
-export function wrap(text,path,mode = 'wrap') {
+export function wrap(text = '',path = [],book = 'wrap') {
 
   let list = [], node;
   let span = path.length;
   
   let rule = this.rule; 
-  let Rule = this.rule.prototype; 
+  let Rule = this.rule.prototype; Rule.book = book;
+
+  // you can refer to below arrow functions 
+  // since they are called during the pipe procedure
+  let wrap = Rule[book] ?? (Rule[book] = new this.dict({
+    para: (text,node,path) => text,
+    list: (text,node,path) => nest(text,node,path),
+    head: (text,node) => this.lead(text,parseInt(node.tagName.split('H')[1] ?? 0),'#'),
+    cite: (text,node,path) => text
+  }))
 
   let nest = (text,node,path) => { 
     let filt = path.filter(d=>d.tagName == 'UL' || d.tagName == 'OL')
     let self = filt[0]
-    console.log(self)
+    
     let sign = self.tagName == 'UL'
       ? '-' : (self.count ? self.count+=1 : (self.count = 1,self.count))+'.'
 
@@ -18,12 +27,6 @@ export function wrap(text,path,mode = 'wrap') {
       sign
     )
   }
-  
-  let wrap = Rule[mode] ?? (Rule.mode = mode, Rule[mode] = new this.dict({
-    para: (text,node,path) => text,
-    list: (text,node,path) => nest(text,node,path),
-    cite: (text,node,path) => text
-  }))
 
   for(let i = 0; i < span; i++) {
     node = path[i];
