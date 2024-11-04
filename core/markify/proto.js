@@ -7,9 +7,10 @@ import { lead } from "./rule/lead.js";
 import { lock } from "./rule/lock.js";
 import { rule } from "./rule/rule.js";
 
-import { snip } from "./util/snip.js";
+import { snip as rejoin } from "./util/snip.js";
 
 const prototype = {
+  rejoin,
   rewrap,
   reform,
   link,
@@ -17,7 +18,6 @@ const prototype = {
   lock,
   dict,
   rule,
-  snip
 }
 
 export default prototype

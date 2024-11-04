@@ -1,7 +1,6 @@
 export default class Markifier {
   constructor({} = {}) {
-    this.snip(["dict", "rule"]);
-
+    this.rejoin(["dict", "rule"]);
     this.reform();
     this.rewrap();
   }
@@ -159,7 +158,7 @@ export default class Markifier {
 
   }
 
-  snip(array) {
+  rejoin(array) {
 
     return Object.defineProperties(
       this,

@@ -1,4 +1,5 @@
 // utility function to snip method context from parent
+// e.g. to rejoin Class methods as functions
 
 export function snip(array) {
   return Object.defineProperties(this,
