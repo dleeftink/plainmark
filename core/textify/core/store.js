@@ -103,6 +103,9 @@ export function store(fragment) {
     let last = node; safe = 0;
  
     // find path or merge with existing
+    // a performance improvement is possible 
+    // by retrieving sibling paths rather than 
+    // walking up the tree for each node
     while (node.parentNode && safe < step) {
       safe++;
 

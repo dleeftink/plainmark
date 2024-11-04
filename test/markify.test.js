@@ -27,12 +27,12 @@ test("I/O", () => {
 
   let nextForm = markifier.reform(
     document.createTextNode('[next]'),
-    [document.createElement('i'),document.createElement('b'),/*document.createElement('h4'),*/link]
+    [document.createElement('i'),document.createElement('b'),document.createElement('h4'),link]
   )
   
   console.log(
     // exitForm,
-    'Completed in ', parseInt(performance.now()-perfA)+ '\n\n'+
+    'Single [Markifier] pass completed in ', parseInt(performance.now()-perfA)+ '\n\n'+
     exitWrap+'\n'+exitWrap2+'\n'+
     nextForm,
 

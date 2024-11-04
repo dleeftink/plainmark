@@ -1,5 +1,7 @@
 // utility function to snip method context from parent
-// e.g. to rejoin Class methods as functions
+// for instance to rejoin Class methods as functions
+//
+// see: Object.freeze
 
 export function snip(array) {
   return Object.defineProperties(this,

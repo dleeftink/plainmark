@@ -290,11 +290,23 @@ export default class Textifier {
 
       node = text.form ?? text;
 
+      if (node.path == undefined) {
+        node.path = path;
+      }
+
       data = fuse.get(text.wrap) ?? new Map();
       (list = data.get(node))
         ? list.push({ text, path })
         : data.set(node, [{ text, path }]);
 
+      if (text.wrap.path == undefined) {
+        text.wrap.path = path;
+      } else if (
+        path.length < text.wrap.path.length &&
+        text.tagName !== "BR"
+      ) {
+        text.wrap.path = path;
+      }
       fuse.set(text.wrap, data);
     }
 

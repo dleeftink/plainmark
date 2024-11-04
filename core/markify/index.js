@@ -10,7 +10,6 @@ export default class Markifier {
     this.rejoin(['dict','rule']);
     this.reform();
     this.rewrap();
-    // this.base = { form: null, wrap: null }
   
   }
 

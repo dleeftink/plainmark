@@ -224,7 +224,7 @@ test("Filter nodes", () => {
 
     // print processIO in last test
     console.log(
-      "Single pass completed in:", processIO
+      "Single [Textifier] pass completed in:", processIO
     )
   }
   

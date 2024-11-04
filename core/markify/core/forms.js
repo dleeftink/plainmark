@@ -1,16 +1,15 @@
-export function form(text = '',path = [],book = 'form') {
+export function form(text = '', path = [], book = 'form') {
 
   let list = [], node;
   let span = path.length;
   
   let rule = this.rule; 
-  let Rule = this.rule.prototype; 
-
-  Rule.book = book;
+  let Rule = this.rule.prototype; Rule.book = book;
   
   let form = Rule[book] ?? (Rule[book] = new this.dict({
     code: (text,node) => this.lock(text, '`'),
     link: (text,node) => this.link(text, node.href),
+    head: (text,node) => this.lead(text,parseInt(node.tagName.split('H')[1] ?? 0),'#'),
     bold: (text,node) => this.lock(text, '**'),
     emph: (text,node) => this.lock(text, '*'),
     none: (text,node) => text

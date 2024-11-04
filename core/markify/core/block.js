@@ -1,4 +1,4 @@
-export function wrap(text = '',path = [],book = 'wrap') {
+export function wrap(text = '', path = [], book = 'wrap') {
 
   let list = [], node;
   let span = path.length;
@@ -11,7 +11,6 @@ export function wrap(text = '',path = [],book = 'wrap') {
   let wrap = Rule[book] ?? (Rule[book] = new this.dict({
     para: (text,node,path) => text,
     list: (text,node,path) => nest(text,node,path),
-    head: (text,node) => this.lead(text,parseInt(node.tagName.split('H')[1] ?? 0),'#'),
     cite: (text,node,path) => text
   }))
 
@@ -38,7 +37,7 @@ export function wrap(text = '',path = [],book = 'wrap') {
   // note: because you're dealing with flat block elements
   // you do not need to iterate over them ...
 
-  let pass = text;
+  let pass = text?.textContent ?? text;
   for(let i = 0; i < span; i++) {
   
     let {node,pipe,path} = list[i]

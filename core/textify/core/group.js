@@ -12,6 +12,11 @@ export function group(flat) {
     [text, path] = Object.values(flat[i]);
     
     node = text.form ?? text;
+
+    // retrieve form path
+    if(node.path == undefined) {
+      node.path = path
+    } 
     
     data = fuse.get(text.wrap) ?? new Map(/*[[node,[text]]]*/);
     (list = data.get(node)) ? list.push({text,path}) : data.set(node,[{text,path}])
@@ -19,6 +24,14 @@ export function group(flat) {
     //list.push({text,path})
     
     //data.set(node,list);
+
+    // retrieve shortest wrap path
+    // note: check for text.tagName or node.tagName ..?
+    if (text.wrap.path == undefined) {
+      text.wrap.path = path
+    } else if(path.length < text.wrap.path.length && text.tagName !== 'BR' ) {
+      text.wrap.path = path
+    }
     fuse.set(text.wrap, data);
     
   }
