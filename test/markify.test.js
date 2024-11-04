@@ -21,8 +21,12 @@ test("I/O", () => {
     exitForm, [document.createElement('li'),ord1]
   )
 
+  let wrap = document.createElement('li');
+  wrap.path =  [document.createElement('li'),document.createElement('ol'),document.createElement('ul')];
+
   let exitWrap2 = markifier.rewrap(
-    exitForm, [document.createElement('li'),document.createElement('ol')],2
+    exitForm, 
+    [wrap.path[1]]
   )
 
   let nextForm = markifier.reform(

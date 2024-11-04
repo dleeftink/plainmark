@@ -18,7 +18,6 @@ export default class Markifier {
 
     let rule = this.rule;
     let Rule = this.rule.prototype;
-
     Rule.book = book;
 
     let form =
@@ -26,6 +25,10 @@ export default class Markifier {
       (Rule[book] = new this.dict({
         code: (text, node) => this.lock(text, "`"),
         link: (text, node) => this.link(text, node.href),
+        head: (text, node) =>
+          this.lead(
+            text,
+            parseInt(node.tagName.split("H")[1] ?? 0),"#",           ),
         bold: (text, node) => this.lock(text, "**"),
         emph: (text, node) => this.lock(text, "*"),
         none: (text, node) => text,
@@ -65,16 +68,13 @@ export default class Markifier {
       (Rule[book] = new this.dict({
         para: (text, node, path) => text,
         list: (text, node, path) => nest(text, node, path),
-        head: (text, node) =>
-          this.lead(
-            text,
-            parseInt(node.tagName.split("H")[1] ?? 0),"#",           ),
         cite: (text, node, path) => text,
       }));
 
     let nest = (text, node, path) => {
-      let filt = path.filter(
-        (d) => d.tagName == "UL" || d.tagName =="OL",       );
+      let filt =
+        path.filter(
+          (d) => d.tagName == "UL" || d.tagName =="OL",         ) || [];
       let self = filt[0];
 
       let sign =
@@ -92,7 +92,7 @@ export default class Markifier {
       list.push(new rule(node, path));
     }
 
-    let pass = text;
+    let pass = text?.textContent ?? text;
     for (let i = 0; i < span; i++) {
       let { node, pipe, path } = list[i];
       if (pipe == undefined) {
